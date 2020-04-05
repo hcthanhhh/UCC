@@ -9,7 +9,7 @@ exports.CloneGit = (req, res) => {
     var repo = request.url;
     var username = request.username;
     var name = request.name;
-    download(`direct:${repo}`, `./data/${username}/${name}`, { clone: true }, (e) => {
+    download(`direct:${repo}`, `../../data/${username}/${name}`, { clone: true }, (e) => {
         console.log(e);
     });
     res.status(200).send('Success');

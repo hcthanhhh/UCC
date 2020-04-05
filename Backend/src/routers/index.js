@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const {CloneGit, UCC2Url, UCCaUrl, UpdateGit, DeleteGit} = require('../controller/ApiContrroller')
+const {CloneGit, UCC2Url, UCCaUrl, UpdateGit, DeleteGit} = require('../controller/ApiController')
 
 router.post('/CloneGit', CloneGit)
 router.post('/UpdateGit', UpdateGit)

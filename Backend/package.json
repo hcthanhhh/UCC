@@ -1,0 +1,22 @@
+{
+  "name": "serverside",
+  "version": "1.0.0",
+  "description": "run powershell using nodejs",
+  "main": "index.js",
+  "scripts": {
+    "serve": "nodemon src/app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Chan-Thanh Hong",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "csv-parser": "^2.3.2",
+    "download-git-repo": "^3.0.2",
+    "export": "^0.1.337",
+    "express": "^4.17.1",
+    "fs": "0.0.1-security",
+    "node-powershell": "^4.0.0",
+    "nodemon": "^2.0.2"
+  }
+}

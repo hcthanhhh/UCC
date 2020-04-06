@@ -38,8 +38,6 @@ exports.UCCaUrl = async (req, res) => {
             result.push(row);
         })
         .on('end', () => {
-            console.log('CSV file');
-            console.log(result);
             res.write(JSON.stringify(result));
     });
 }

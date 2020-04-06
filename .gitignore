@@ -104,5 +104,4 @@ dist
 .tern-port
 
 #data_response
-.data/
-/data/
+data/

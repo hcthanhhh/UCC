@@ -21,7 +21,7 @@ exports.UCCaUrl = async (req, res) => {
     console.log(request);
     username = req.body.username;
     name = req.body.name;
-    
+
     let ps = new shell({
         executionPolicy: 'Bypass',
         noProfile: true
@@ -38,18 +38,18 @@ exports.UCCaUrl = async (req, res) => {
         })
         .on('end', () => {
             res.json(result);
-    });
+        });
 }
 
 exports.UCC2Url = async (req, res) => {
-    
+
     request = req.body;
     console.log(request);
     username = req.body.username;
     name = req.body.name;
 
     try {
-        const {stdout, stderr} = await exec(`./UCC/UCC -unified -dir ../data/${username}/${name} -outdir ../data/${username}/${name}/result`);
+        const { stdout, stderr } = await exec(`./UCC/UCC -unified -dir ../data/${username}/${name} -outdir ../data/${username}/${name}/result`);
         console.log(`stdout: ${stdout}`);
         console.log(`stderr: ${stderr}`);
     } catch (error) {
@@ -64,7 +64,7 @@ exports.UCC2Url = async (req, res) => {
         })
         .on('end', () => {
             res.json(result);
-    });
+        });
 }
 exports.DeleteGit = () => {
 

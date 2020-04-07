@@ -49,7 +49,7 @@ exports.UCC2Url = async (req, res) => {
     name = req.body.name;
 
     try {
-        const { stdout, stderr } = await exec(`./UCC/UCC -unified -dir ../data/${username}/${name} -outdir ../data/${username}/${name}/result`);
+        const { stdout, stderr } = await exec(`./UCC/UCC -unified -dir ../data/${username}/${name} -outdir ../data/${username}/result/${name}`);
         console.log(`stdout: ${stdout}`);
         console.log(`stderr: ${stderr}`);
     } catch (error) {
@@ -57,7 +57,7 @@ exports.UCC2Url = async (req, res) => {
     };
 
     var result = []
-    fs.createReadStream(`../data/${username}/${name}/result/TOTAL_outfile.csv`)
+    fs.createReadStream(`../data/${username}/result/${name}/TOTAL_outfile.csv`)
         .pipe(csv())
         .on('data', row => {
             result.push(row);

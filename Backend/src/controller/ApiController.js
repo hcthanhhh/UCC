@@ -4,17 +4,40 @@ const csv = require('csv-parser');
 const util = require('util');
 const exec = util.promisify(require('child_process').exec);
 const fs = require('fs');
+exports.UploadProject = async (req, res) => {
+    request = req.body;
+    file = req.file;
+    console.log(request);
+    var username = request.username;
+    var name = request.name;
+    try {
+        await exec(`mkdir ../data/${username}/${name}`);
+        await exec(`mv ../data/${file.filename} ../data/${file.originalname}`);
+        await exec(`unzip ../data/${file.originalname} -d ../data/${username}/${name}`);
+        await exec(`rm ../data/${file.originalname}`);
+        res.status(200).send({message: 'Success'});
+    } catch (error) {
+        console.log("Error: ", error);
+        res.status(404).send(error);
+    }
+}
 
 exports.CloneGit = (req, res) => {
     request = req.body;
-    console.log(request);
+    console.log(req);
     var repo = request.url;
     var username = request.username;
     var name = request.name;
     download(`direct:${repo}`, `../data/${username}/${name}`, { clone: true }, (e) => {
-        console.log(e);
+        if (e) {
+            res.status(404).send({ message: 'Error' })
+            console.log('Error');
+        }
+        else {
+            res.status(200).send({message: 'Success'});
+            console.log('Success');
+        }
     });
-    res.status(200).send('Success');
 }
 exports.UCCaUrl = async (req, res) => {
     request = req.body;
@@ -52,19 +75,19 @@ exports.UCC2Url = async (req, res) => {
         const { stdout, stderr } = await exec(`./UCC/UCC -unified -dir ../data/${username}/${name} -outdir ../data/${username}/result/${name}`);
         console.log(`stdout: ${stdout}`);
         console.log(`stderr: ${stderr}`);
+        var result = []
+        fs.createReadStream(`../data/${username}/result/${name}/TOTAL_outfile.csv`)
+            .pipe(csv())
+            .on('data', row => {
+                result.push(row);
+            })
+            .on('end', () => {
+                res.json(result);
+            });
     } catch (error) {
         console.error(error);
+        res.status(404).send({ message: "Error" });
     };
-
-    var result = []
-    fs.createReadStream(`../data/${username}/result/${name}/TOTAL_outfile.csv`)
-        .pipe(csv())
-        .on('data', row => {
-            result.push(row);
-        })
-        .on('end', () => {
-            res.json(result);
-        });
 }
 exports.DeleteGit = () => {
 

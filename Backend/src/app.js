@@ -1,12 +1,15 @@
 const express = require('express');
-const bodyParser = require('body-parser')
+const bodyParser = require('body-parser');
 const router = require('./routers');
 
 const app = express();
 const PORT = 3000;
 
+// for parsing application/xwww-
 app.use(bodyParser.urlencoded({extended: false}));
-app.use(bodyParser.json());
+
+// for parsing application/json
+app.use(bodyParser.json()); 
 
 app.use('/api', router);
 

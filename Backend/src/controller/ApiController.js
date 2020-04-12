@@ -40,6 +40,22 @@ exports.CloneGit = (req, res) => {
         }
     });
 }
+
+exports.DeleteGit = (req, res) => {
+    request = req.body;
+    username = request.username;
+    name = request.name;
+
+    try {
+        exec(`rm -rf ../data/${username}/${name}`);
+        exec(`rm -rf ../data/${username}/result/${name}`);
+        res.status(200).send({message: "Success"});
+    } catch (error) {
+        console.log(error);
+        res.status(404).send({message: "Error"});
+    };
+}
+
 exports.UCCaUrl = async (req, res) => {
     request = req.body;
     console.log(request);
@@ -90,20 +106,7 @@ exports.UCC2Url = async (req, res) => {
         res.status(404).send({ message: "Error" });
     };
 }
-exports.DeleteGit = (req, res) => {
-    request = req.body;
-    username = request.username;
-    name = request.name;
 
-    try {
-        exec(`rm -rf ../data/${username}/${name}`);
-        exec(`rm -rf ../data/${username}/result/${name}`);
-        res.status(200).send({message: "Success"});
-    } catch (error) {
-        console.log(error);
-        res.status(404).send({message: "Error"});
-    };
-}
 exports.UpdateGit = () => {
 
 }

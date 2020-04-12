@@ -39,9 +39,9 @@ UCC is currently extended with the following functions.
 | ------ | ------ |
 | CloneGit | ```api/CloneGit``` |
 | UploadProject | ```api/UploadProject``` |
+| DeleteGit | ```api/DeleteGit``` |
 | UCCaUrl | ```api/UCCaUrl``` |
 | UCC2Url | ```api/UCC2Url``` |
-| DeleteGit | ```api/DeleteGit``` |
 
 ### Todos
 

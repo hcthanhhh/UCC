@@ -25,14 +25,16 @@ exports.UploadProject = async (req, res) => {
 
 exports.CloneGit = (req, res) => {
     request = req.body;
-    console.log(req);
+    console.log(request);
     var repo = request.url;
     var username = request.username;
     var name = request.name;
+    
     download(`direct:${repo}`, `../data/${username}/${name}`, { clone: true }, (e) => {
         if (e) {
             res.status(404).send({ message: 'Error' })
             console.log('Error');
+            console.log(e);
         }
         else {
             res.status(200).send({message: 'Success'});
@@ -54,6 +56,22 @@ exports.DeleteGit = (req, res) => {
         console.log(error);
         res.status(404).send({message: "Error"});
     };
+}
+
+exports.GetInfo = (req, res) => {
+    request = req.body;
+    username = request.username;
+    name = request.name;
+
+    fs.readdir(`../data/${username}/${name}`, (err, files) => {
+        if (err) {
+            console.log(err);
+            res.status(404).send({message: "Error"});
+            return;
+        }
+        console.log(files);
+        res.status(200).send(files);
+    })
 }
 
 exports.UCCaUrl = async (req, res) => {

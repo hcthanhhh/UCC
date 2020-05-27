@@ -1,0 +1,7 @@
+﻿namespace SoftwareEstimation.Roles.Dto
+{
+    public class GetRolesInput
+    {
+        public string Permission { get; set; }
+    }
+}

@@ -4,6 +4,7 @@ const csv = require('csv-parser');
 const util = require('util');
 const exec = util.promisify(require('child_process').exec);
 const fs = require('fs');
+const path = require('path');
 
 exports.UploadProject = async (req, res) => {
     request = req.body;
@@ -29,18 +30,24 @@ exports.CloneGit = (req, res) => {
     var repo = request.url;
     var username = request.username;
     var name = request.name;
+
+    console.log(repo, username, name);
     
-    download(`direct:${repo}`, `../data/${username}/${name}`, { clone: true }, (e) => {
+    download(`direct:${repo}`, `../data/${username}/${name}`, { clone: true }, async (e) => {
         if (e) {
             res.status(404).send({ message: 'Error' })
             console.log('Error');
             console.log(e);
         }
         else {
-            res.status(200).send({message: 'Success'});
+            await res.status(200).send({message: 'Success'});
+            // const {stdout, stderr} = await exec (`find ../data/${username}/${name} -type f > ..data/${username}/${name}/listFiles.txt`);
+            const {stdout, stderr} = await exec(`ls -r ../data/${username}/${name}`);
+            console.log(stdout);
             console.log('Success');
         }
     });
+    
 }
 
 exports.DeleteGit = (req, res) => {
@@ -62,6 +69,7 @@ exports.GetInfo = (req, res) => {
     request = req.body;
     username = request.username;
     name = request.name;
+    console.log(username, name);
 
     fs.readdir(`../data/${username}/${name}`, (err, files) => {
         if (err) {
@@ -70,10 +78,16 @@ exports.GetInfo = (req, res) => {
             return;
         }
         console.log(files);
-        res.status(200).send(files);
+        if (files.includes('README.md')) {
+            res.set('Content-Type','text/plain');
+            res.status(200).sendFile(path.resolve(`../data/${username}/${name}/README.md`));
+        }
+        else {
+            console.log("haha");
+            res.status(403).send(files);
+        }
     })
 }
-
 exports.UCCaUrl = async (req, res) => {
     request = req.body;
     console.log(request);
@@ -127,4 +141,32 @@ exports.UCC2Url = async (req, res) => {
 
 exports.UpdateGit = () => {
 
+}
+
+exports.Compare = async (req, res) => {
+    request = req.body;
+    username = request.username;
+    name1 = request.project1;
+    name2 = request.project2;
+    try {
+        const { stdout, stderr } = await exec(`./UCC/UCC -unified -d -dir ../data/${username}/${name1} ../data/${username}/${name2} -outdir ../data/${username}/result/compare/${name1}_${name2}/`);
+        console.log(`stdout: ${stdout}`);
+        console.log(`stderr: ${stderr}`);
+        var result = []
+        fs.createReadStream(`../data/${username}/result/compare/${name1}_${name2}/outfile_diff_results.csv`)
+            .pipe(csv())
+            .on('data', row => {
+                result.push(row);
+            })
+            .on('end', () => {
+                res.json(result);
+            });
+    } catch (error) {
+        console.error(error);
+        res.status(404).send({ message: "Error" });
+    };
+}
+
+exports.Hello = (req, res) => {
+    res.status(200).send({message: 'Hello World'});
 }

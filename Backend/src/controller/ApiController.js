@@ -131,7 +131,7 @@ exports.UCC2Url = async (req, res) => {
                 result.push(row);
             })
             .on('end', () => {
-                res.json(result);
+                res.status(200).json(result);
             });
     } catch (error) {
         console.error(error);

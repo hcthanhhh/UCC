@@ -31,7 +31,7 @@ exports.CloneGit = (req, res) => {
     var username = request.username;
     var name = request.name;
 
-    console.log(repo, username, name);
+    console.log("CLone GIT: ",repo, username, name);
     
     download(`direct:${repo}`, `../data/${username}/${name}`, { clone: true }, async (e) => {
         if (e) {
@@ -55,6 +55,8 @@ exports.DeleteGit = (req, res) => {
     username = request.username;
     name = request.name;
 
+    console.log("Delete GIT: ", username, name);
+
     try {
         exec(`rm -rf ../data/${username}/${name}`);
         exec(`rm -rf ../data/${username}/result/${name}`);
@@ -69,7 +71,8 @@ exports.GetInfo = (req, res) => {
     request = req.body;
     username = request.username;
     name = request.name;
-    console.log(username, name);
+
+    console.log("Get README.md: ", username, name);
 
     fs.readdir(`../data/${username}/${name}`, (err, files) => {
         if (err) {
@@ -88,6 +91,24 @@ exports.GetInfo = (req, res) => {
         }
     })
 }
+
+exports.GetlistFile = async (req, res) => {
+    request = req.body;
+    username = request.username;
+    name = request.name;
+    console.log("Get list Files: ", username, name);
+
+    try {
+        // exec(`touch ../data/${username}/${name}/listFile.txt`);
+        exec(`find ../data/${username}/${name} > ../data/${username}/${name}/fileList.txt`);
+        res.set('Content-Type','text/plain');
+        res.status(200).sendFile(path.resolve(`../data/${username}/${name}/fileList.txt`));
+    } catch (err) {
+        console.log(err);
+        res.send(404).send({message: 'Error'});
+    }
+}
+ 
 exports.UCCaUrl = async (req, res) => {
     request = req.body;
     console.log(request);
@@ -120,6 +141,8 @@ exports.UCC2Url = async (req, res) => {
     username = req.body.username;
     name = req.body.name;
 
+    console.log("Run UCC: ",repo, username, name);
+
     try {
         const { stdout, stderr } = await exec(`./UCC/UCC -unified -dir ../data/${username}/${name} -outdir ../data/${username}/result/${name}`);
         console.log(`stdout: ${stdout}`);
@@ -148,6 +171,8 @@ exports.Compare = async (req, res) => {
     username = request.username;
     name1 = request.project1;
     name2 = request.project2;
+
+    console.log("UCC Compare: ", username, name1, name2);
     try {
         const { stdout, stderr } = await exec(`./UCC/UCC -unified -d -dir ../data/${username}/${name1} ../data/${username}/${name2} -outdir ../data/${username}/result/compare/${name1}_${name2}/`);
         console.log(`stdout: ${stdout}`);

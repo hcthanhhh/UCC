@@ -106,4 +106,3 @@ dist
 #data_response
 data/
 .DS_Store
-test/

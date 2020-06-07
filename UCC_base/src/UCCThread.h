@@ -36,7 +36,7 @@
     #define		ENABLE_THREADS
 #else
 	// Available if Boost thread library installed, compiled, .h included and linked.
-	// #define		ENABLE_THREADS
+	#define		ENABLE_THREADS
 #endif
 
 // OK even if not compiled with thread support

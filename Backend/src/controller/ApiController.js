@@ -109,7 +109,7 @@ exports.GetlistFile = async (req, res) => {
     }
 }
  
-exports.UCCaUrl = async (req, res) => {
+exports.UCCUrlWindows = async (req, res) => {
     request = req.body;
     console.log(request);
     username = req.body.username;
@@ -134,7 +134,7 @@ exports.UCCaUrl = async (req, res) => {
         });
 }
 
-exports.UCC2Url = async (req, res) => {
+exports.UCCUrlMac = async (req, res) => {
 
     request = req.body;
     console.log(request);
@@ -144,7 +144,35 @@ exports.UCC2Url = async (req, res) => {
     console.log("Run UCC: ", username, name);
 
     try {
-        const { stdout, stderr } = await exec(`./UCC/UCC -unified -dir ../data/${username}/${name} -outdir ../data/${username}/result/${name}`);
+        const { stdout, stderr } = await exec(`./UCC/UCC.mac -unified -dir ../data/${username}/${name} -outdir ../data/${username}/result/${name}`);
+        console.log(`stdout: ${stdout}`);
+        console.log(`stderr: ${stderr}`);
+        var result = []
+        fs.createReadStream(`../data/${username}/result/${name}/TOTAL_outfile.csv`)
+            .pipe(csv())
+            .on('data', row => {
+                result.push(row);
+            })
+            .on('end', () => {
+                res.status(200).json(result);
+            });
+    } catch (error) {
+        console.error(error);
+        res.status(404).send({ message: "Error" });
+    };
+}
+
+exports.UCCUrlLinux = async (req, res) => {
+
+    request = req.body;
+    console.log(request);
+    username = req.body.username;
+    name = req.body.name;
+
+    console.log("Run UCC: ", username, name);
+
+    try {
+        const { stdout, stderr } = await exec(`./UCC/UCC.linux -unified -dir ../data/${username}/${name} -outdir ../data/${username}/result/${name}`);
         console.log(`stdout: ${stdout}`);
         console.log(`stderr: ${stderr}`);
         var result = []
@@ -174,7 +202,7 @@ exports.Compare = async (req, res) => {
 
     console.log("UCC Compare: ", username, name1, name2);
     try {
-        const { stdout, stderr } = await exec(`./UCC/UCC -unified -d -dir ../data/${username}/${name1} ../data/${username}/${name2} -outdir ../data/${username}/result/compare/${name1}_${name2}/`);
+        const { stdout, stderr } = await exec(`./UCC/UCC.mac -unified -d -dir ../data/${username}/${name1} ../data/${username}/${name2} -outdir ../data/${username}/result/compare/${name1}_${name2}/`);
         console.log(`stdout: ${stdout}`);
         console.log(`stderr: ${stderr}`);
         var result = []

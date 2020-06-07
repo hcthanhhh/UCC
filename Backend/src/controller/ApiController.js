@@ -88,16 +88,16 @@ exports.GetInfo = (req, res) => {
                     res.status(404).send({message: "Error"});
                     return;
                 }
+                if (files.includes('README.md')) {
+                    res.set('Content-Type','text/plain');
+                    res.status(200).sendFile(path.resolve(`../data/${username}/${name}/README.md`));
+                }
+                else {
+                    console.log("hihi");
+                    res.status(403).send(files);
+                }
+                return;
             })
-            if (files.includes('README.md')) {
-                res.set('Content-Type','text/plain');
-                res.status(200).sendFile(path.resolve(`../data/${username}/${name}/README.md`));
-            }
-            else {
-                console.log("haha");
-                res.status(403).send(files);
-            }
-            return;
         }
         if (files.includes('README.md')) {
             res.set('Content-Type','text/plain');

@@ -82,7 +82,7 @@ exports.GetInfo = (req, res) => {
         }
         console.log(files);
         if (files.length == 1) {
-            fs.readdir(`../data/${username}/${name}`, (err, files) => {
+            fs.readdir(`../data/${username}/${files[0]}`, (err, files) => {
                 if (err) {
                     console.log(err);
                     res.status(404).send({message: "Error"});

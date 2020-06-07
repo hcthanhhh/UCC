@@ -17,10 +17,10 @@ exports.UploadProject = async (req, res) => {
         await exec(`mv ../data/${file.filename} ../data/${file.originalname}`);
         await exec(`unzip ../data/${file.originalname} -d ../data/${username}/${name}`);
         await exec(`rm ../data/${file.originalname}`);
-        res.status(200).send({message: 'Success'});
+        res.status(200).send({ message: 'Success' });
     } catch (error) {
         console.log("Error: ", error);
-        res.status(404).send({message: 'Error'});
+        res.status(404).send({ message: 'Error' });
     }
 }
 
@@ -31,8 +31,8 @@ exports.CloneGit = (req, res) => {
     var username = request.username;
     var name = request.name;
 
-    console.log("CLone GIT: ",repo, username, name);
-    
+    console.log("CLone GIT: ", repo, username, name);
+
     download(`direct:${repo}`, `../data/${username}/${name}`, { clone: true }, async (e) => {
         if (e) {
             res.status(404).send({ message: 'Error' })
@@ -40,14 +40,14 @@ exports.CloneGit = (req, res) => {
             console.log(e);
         }
         else {
-            await res.status(200).send({message: 'Success'});
+            await res.status(200).send({ message: 'Success' });
             // const {stdout, stderr} = await exec (`find ../data/${username}/${name} -type f > ..data/${username}/${name}/listFiles.txt`);
-            const {stdout, stderr} = await exec(`ls -r ../data/${username}/${name}`);
+            const { stdout, stderr } = await exec(`ls -r ../data/${username}/${name}`);
             console.log(stdout);
             console.log('Success');
         }
     });
-    
+
 }
 
 exports.DeleteGit = (req, res) => {
@@ -60,10 +60,10 @@ exports.DeleteGit = (req, res) => {
     try {
         exec(`rm -rf ../data/${username}/${name}`);
         exec(`rm -rf ../data/${username}/result/${name}`);
-        res.status(200).send({message: "Success"});
+        res.status(200).send({ message: "Success" });
     } catch (error) {
         console.log(error);
-        res.status(404).send({message: "Error"});
+        res.status(404).send({ message: "Error" });
     };
 }
 
@@ -73,41 +73,44 @@ exports.GetInfo = (req, res) => {
     name = request.name;
 
     console.log("Get README.md: ", username, name);
+    check = '';
 
     fs.readdir(`../data/${username}/${name}`, (err, files) => {
         if (err) {
             console.log(err);
-            res.status(404).send({message: "Error"});
+            res.status(404).send({ message: "Error" });
             return;
         }
         console.log(files);
+        if (files.includes('README.md')) {
+            res.set('Content-Type', 'text/plain');
+            res.status(200).sendFile(path.resolve(`../data/${username}/${name}/README.md`));
+            return;
+        }
         if (files.length == 1) {
-            fs.readdir(`../data/${username}/${files[0]}`, (err, files) => {
+            check = files[0];
+            console.log(check);
+            fs.readdir(`../data/${username}/${name}/${check}`, (err, file) => {
                 if (err) {
                     console.log(err);
-                    res.status(404).send({message: "Error"});
+                    res.status(404).send({ message: "Error" });
                     return;
                 }
-                if (files.includes('README.md')) {
-                    res.set('Content-Type','text/plain');
-                    res.status(200).sendFile(path.resolve(`../data/${username}/${name}/README.md`));
+                console.log(file);
+                if (file.includes('README.md')) {
+                    res.set('Content-Type', 'text/plain');
+                    res.status(200).sendFile(path.resolve(`../data/${username}/${name}/${check}/README.md`));
                 }
                 else {
-                    console.log("hihi");
-                    res.status(403).send(files);
+                    res.status(403).send(file);
                 }
                 return;
             })
-        } 
-        else if (files.includes('README.md')) {
-            res.set('Content-Type','text/plain');
-            res.status(200).sendFile(path.resolve(`../data/${username}/${name}/README.md`));
-        }
-        else {
-            console.log("haha");
+        } else {
             res.status(403).send(files);
         }
     })
+    console.log(check);
 }
 
 exports.GetlistFile = async (req, res) => {
@@ -119,14 +122,14 @@ exports.GetlistFile = async (req, res) => {
     try {
         // exec(`touch ../data/${username}/${name}/listFile.txt`);
         exec(`find ../data/${username}/${name} > ../data/${username}/${name}/fileList.txt`);
-        res.set('Content-Type','text/plain');
+        res.set('Content-Type', 'text/plain');
         res.status(200).sendFile(path.resolve(`../data/${username}/${name}/fileList.txt`));
     } catch (err) {
         console.log(err);
-        res.send(404).send({message: 'Error'});
+        res.send(404).send({ message: 'Error' });
     }
 }
- 
+
 exports.UCCUrlWindows = async (req, res) => {
     request = req.body;
     console.log(request);
@@ -239,5 +242,5 @@ exports.Compare = async (req, res) => {
 }
 
 exports.Hello = (req, res) => {
-    res.status(200).send({message: 'Hello World'});
+    res.status(200).send({ message: 'Hello World' });
 }

@@ -81,6 +81,24 @@ exports.GetInfo = (req, res) => {
             return;
         }
         console.log(files);
+        if (files.length == 1) {
+            fs.readdir(`../data/${username}/${name}`, (err, files) => {
+                if (err) {
+                    console.log(err);
+                    res.status(404).send({message: "Error"});
+                    return;
+                }
+            })
+            if (files.includes('README.md')) {
+                res.set('Content-Type','text/plain');
+                res.status(200).sendFile(path.resolve(`../data/${username}/${name}/README.md`));
+            }
+            else {
+                console.log("haha");
+                res.status(403).send(files);
+            }
+            return;
+        }
         if (files.includes('README.md')) {
             res.set('Content-Type','text/plain');
             res.status(200).sendFile(path.resolve(`../data/${username}/${name}/README.md`));

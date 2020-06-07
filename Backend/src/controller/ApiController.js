@@ -13,7 +13,7 @@ exports.UploadProject = async (req, res) => {
     var username = request.username;
     var name = request.name;
     try {
-        await exec(`mkdir ../data/${username}/${name}`);
+        await exec(`mkdir -p ../data/${username}/${name}`);
         await exec(`mv ../data/${file.filename} ../data/${file.originalname}`);
         await exec(`unzip ../data/${file.originalname} -d ../data/${username}/${name}`);
         await exec(`rm ../data/${file.originalname}`);

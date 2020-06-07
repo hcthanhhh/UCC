@@ -98,8 +98,8 @@ exports.GetInfo = (req, res) => {
                 }
                 return;
             })
-        }
-        if (files.includes('README.md')) {
+        } 
+        else if (files.includes('README.md')) {
             res.set('Content-Type','text/plain');
             res.status(200).sendFile(path.resolve(`../data/${username}/${name}/README.md`));
         }

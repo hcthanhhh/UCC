@@ -141,7 +141,7 @@ exports.UCC2Url = async (req, res) => {
     username = req.body.username;
     name = req.body.name;
 
-    console.log("Run UCC: ",repo, username, name);
+    console.log("Run UCC: ", username, name);
 
     try {
         const { stdout, stderr } = await exec(`./UCC/UCC -unified -dir ../data/${username}/${name} -outdir ../data/${username}/result/${name}`);

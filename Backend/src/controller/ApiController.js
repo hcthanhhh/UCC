@@ -47,7 +47,6 @@ exports.CloneGit = (req, res) => {
             console.log('Success');
         }
     });
-
 }
 
 exports.DeleteGit = (req, res) => {

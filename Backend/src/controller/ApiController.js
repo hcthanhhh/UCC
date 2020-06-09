@@ -42,8 +42,8 @@ exports.CloneGit = (req, res) => {
         else {
             await res.status(200).send({ message: 'Success' });
             // const {stdout, stderr} = await exec (`find ../data/${username}/${name} -type f > ..data/${username}/${name}/listFiles.txt`);
-            const { stdout, stderr } = await exec(`ls -r ../data/${username}/${name}`);
-            console.log(stdout);
+            // const { stdout, stderr } = await exec(`ls -r ../data/${username}/${name}`);
+            // console.log(stdout);
             console.log('Success');
         }
     });
@@ -135,23 +135,33 @@ exports.UCCUrlWindows = async (req, res) => {
     console.log(request);
     username = req.body.username;
     name = req.body.name;
+    console.log("UCC Windows: ", username, name);
+    check = true;
 
     let ps = new shell({
         executionPolicy: 'Bypass',
         noProfile: true
     });
 
-    await ps.addCommand(`./UCC/UCC -unified -dir ../data/${username}/${name} -outdir ../data/${username}/${name}/result`);
+    await ps.addCommand(`./UCC/UCC -unified -dir ../data/${username}/${name} -outdir ../data/${username}/result/${name}`);
     await ps.invoke().then(output => console.log(`res: ${output}`));
 
     var result = []
-    fs.createReadStream(`../data/${username}/${name}/result/TOTAL_outfile.csv`)
+    fs.createReadStream(`../data/${username}/result/${name}/TOTAL_outfile.csv`)
         .pipe(csv())
         .on('data', row => {
-            result.push(row);
+            if (check) {
+                myrow = JSON.stringify(row);
+                console.log(myrow);
+                if (myrow.includes("RESULTS FOR ALL NON-WEB LANGUAGE FILES")) {
+                    check = false;
+                    result.push({ '0': 'RESULTS FOR ALL NON-WEB LANGUAGE FILES' })
+                }
+            }
+            else result.push(row);
         })
         .on('end', () => {
-            res.json(result);
+            res.status(200).json(result);
         });
 }
 
@@ -161,6 +171,7 @@ exports.UCCUrlMac = async (req, res) => {
     console.log(request);
     username = req.body.username;
     name = req.body.name;
+    check = true;
 
     console.log("Run UCC: ", username, name);
 
@@ -172,7 +183,15 @@ exports.UCCUrlMac = async (req, res) => {
         fs.createReadStream(`../data/${username}/result/${name}/TOTAL_outfile.csv`)
             .pipe(csv())
             .on('data', row => {
-                result.push(row);
+                if (check) {
+                    myrow = JSON.stringify(row);
+                    console.log(myrow);
+                    if (myrow.includes("RESULTS FOR ALL NON-WEB LANGUAGE FILES")) {
+                        check = false;
+                        result.push({ '0': 'RESULTS FOR ALL NON-WEB LANGUAGE FILES' })
+                    }
+                }
+                else result.push(row);
             })
             .on('end', () => {
                 res.status(200).json(result);
@@ -189,8 +208,10 @@ exports.UCCUrlLinux = async (req, res) => {
     console.log(request);
     username = req.body.username;
     name = req.body.name;
+    check = true;
 
     console.log("Run UCC: ", username, name);
+    check = true;
 
     try {
         const { stdout, stderr } = await exec(`./UCC/UCC.linux -unified -dir ../data/${username}/${name} -outdir ../data/${username}/result/${name}`);
@@ -200,7 +221,15 @@ exports.UCCUrlLinux = async (req, res) => {
         fs.createReadStream(`../data/${username}/result/${name}/TOTAL_outfile.csv`)
             .pipe(csv())
             .on('data', row => {
-                result.push(row);
+                if (check) {
+                    myrow = JSON.stringify(row);
+                    console.log(myrow);
+                    if (myrow.includes("RESULTS FOR ALL NON-WEB LANGUAGE FILES")) {
+                        check = false;
+                        result.push({ '0': 'RESULTS FOR ALL NON-WEB LANGUAGE FILES' });
+                    }
+                }
+                else result.push(row);
             })
             .on('end', () => {
                 res.status(200).json(result);

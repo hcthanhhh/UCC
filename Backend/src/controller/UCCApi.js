@@ -114,7 +114,7 @@ exports.UCCUrlLinux = async (req, res) => {
     };
 };
 
-exports.Compare = async (req, res) => {
+exports.CompareMac = async (req, res) => {
     request = req.body;
     username = request.username;
     name1 = request.project1;
@@ -123,6 +123,33 @@ exports.Compare = async (req, res) => {
     console.log("UCC Compare: ", username, name1, name2);
     try {
         const { stdout, stderr } = await exec(`./UCC/UCC.mac -unified -d -dir ../data/${username}/${name1} ../data/${username}/${name2} -outdir ../data/${username}/result/compare/${name1}_${name2}/`);
+        console.log(`stdout: ${stdout}`);
+        console.log(`stderr: ${stderr}`);
+        var result = []
+        fs.createReadStream(`../data/${username}/result/compare/${name1}_${name2}/outfile_diff_results.csv`)
+            .pipe(csv())
+            .on('data', row => {
+                result.push(row);
+            })
+            .on('end', () => {
+                console.log('Success');
+                res.json(result);
+            });
+    } catch (error) {
+        console.error(error);
+        res.status(404).send({ message: "Error" });
+    };
+}
+
+exports.CompareLinux = async (req, res) => {
+    request = req.body;
+    username = request.username;
+    name1 = request.project1;
+    name2 = request.project2;
+
+    console.log("UCC Compare: ", username, name1, name2);
+    try {
+        const { stdout, stderr } = await exec(`./UCC/UCC.linux -unified -d -dir ../data/${username}/${name1} ../data/${username}/${name2} -outdir ../data/${username}/result/compare/${name1}_${name2}/`);
         console.log(`stdout: ${stdout}`);
         console.log(`stderr: ${stderr}`);
         var result = []

@@ -82,7 +82,6 @@ exports.UCCUrlLinux = async (req, res) => {
     request = req.body;
     username = req.body.username;
     name = req.body.name;
-    check = true;
 
     console.log("Run UCC: ", username, name);
     check = true;

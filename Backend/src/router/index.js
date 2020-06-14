@@ -8,6 +8,7 @@ const { Hello } = require('../controller/ApiController');
 const { CloneProject, UploadProject, DeleteProject, UpdateProject } = require('../controller/SetupProjectApi');
 const { UCCUrlMac, UCCUrlWindows, UCCUrlLinux, CompareMac, CompareLinux } = require('../controller/UCCApi');
 const { GetREADME, GetlistFile } = require('../controller/GetInfoApi');
+const { CalculateUCP } = require('../controller/UCPApi')
 
 const upload = multer({ dest: '../data' });
 
@@ -27,6 +28,9 @@ router.post('/Compare', CompareLinux);
 // Get Info API
 router.post('/GetInfo', GetREADME);
 router.post('/GetlistFile', GetlistFile);
+
+// UCP API
+router.post('/CalculateUCP', CalculateUCP);
 
 // TEST API
 router.get('/Hello', Hello);

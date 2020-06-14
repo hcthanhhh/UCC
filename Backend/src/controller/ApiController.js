@@ -272,5 +272,11 @@ exports.Compare = async (req, res) => {
 }
 
 exports.Hello = (req, res) => {
+    request = req.body;
+    username = request.username;
+    project1 = request.project1;
+    project2 = request.project2;
+    console.log(username, project1, project2);
+
     res.status(200).send({ message: 'Hello World' });
 }

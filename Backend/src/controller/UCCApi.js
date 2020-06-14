@@ -147,7 +147,8 @@ exports.CompareLinux = async (req, res) => {
     name1 = request.project1;
     name2 = request.project2;
 
-    console.log("UCC Compare: ", username, name1, name2);
+    await console.log("UCC Compare: ", username, name1, name2);
+
     try {
         const { stdout, stderr } = await exec(`./UCC/UCC.linux -unified -d -dir ../data/${username}/${name1} ../data/${username}/${name2} -outdir ../data/${username}/result/compare/${name1}_${name2}/`);
         console.log(`stdout: ${stdout}`);

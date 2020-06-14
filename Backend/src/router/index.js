@@ -8,7 +8,8 @@ const { Hello } = require('../controller/ApiController');
 const { CloneProject, UploadProject, DeleteProject, UpdateProject } = require('../controller/SetupProjectApi');
 const { UCCUrlMac, UCCUrlWindows, UCCUrlLinux, CompareMac, CompareLinux } = require('../controller/UCCApi');
 const { GetREADME, GetlistFile } = require('../controller/GetInfoApi');
-const { CalculateUCP } = require('../controller/UCPApi')
+const { CalculateUCP } = require('../controller/UCPApi');
+const { BasicCocomo, IntermediateCocomo, DetailedCocomo } = require('../controller/CocomoApi');
 
 const upload = multer({ dest: '../data' });
 
@@ -31,6 +32,11 @@ router.post('/GetlistFile', GetlistFile);
 
 // UCP API
 router.post('/CalculateUCP', CalculateUCP);
+
+// Cocomo API
+router.post('/BasicCocomo', BasicCocomo);
+router.post('/IntermediateCocomo', IntermediateCocomo);
+router.post('/DetailedCocomo', DetailedCocomo);
 
 // TEST API
 router.get('/Hello', Hello);

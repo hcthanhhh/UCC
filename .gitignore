@@ -106,3 +106,6 @@ dist
 #data_response
 data/
 .DS_Store
+
+#Frontend
+SoftwareEstimation/

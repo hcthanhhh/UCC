@@ -12,21 +12,23 @@ exports.CalculateUCP = (req, res) => {
 
 
         //Technical Complpexity Factor
+        let nTCF = request.TCF.n;
         let TCF = 0.6;
         let TF = 0; //Technical Factor
 
 
-        for (let i = 0; i < 13; i++) {
+        for (let i = 0; i < nTCF; i++) {
             TF = request.TCF.weight[i] * request.TCF.assigned_value[i];
         }
         TCF += (TF / 100);
 
 
         //Environmental Complexity Factor
+        let nECF = request.ECF.n;
         let ECF = 1.4;
         let EF = 0 //Environmental Factor
 
-        for (let i = 0; i < 8; i++) {
+        for (let i = 0; i < nECF; i++) {
             EF = request.ECF.weight[i] * request.ECF.assigned_value[i];
         }
         ECF += (-0.03 * EF);

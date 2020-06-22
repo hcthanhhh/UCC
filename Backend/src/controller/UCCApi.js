@@ -62,14 +62,30 @@ exports.UCCUrlMac = async (req, res) => {
                     myrow = JSON.stringify(row);
                     if (myrow.includes("RESULTS FOR ALL NON-WEB LANGUAGE FILES")) {
                         check = false;
-                        result.push({ '0': 'RESULTS FOR ALL NON-WEB LANGUAGE FILES' })
+                        result.push({ '0': 'RESULTS FOR ALL NON-WEB LANGUAGE FILES' });
                     }
                 }
                 else result.push(row);
             })
             .on('end', () => {
-                console.log('Success');
-                res.status(200).json(result);
+                check = true;
+                fs.createReadStream(`../data/${username}/result/${name}/outfile_Summary.csv`)
+                    .pipe(csv())
+                    .on('data', row => {
+                        if (check) {
+                            myrow = JSON.stringify(row);
+                            if (myrow.includes('"0":"Language"')) {
+                                check = false;
+                                result.push({ '0': 'KLOC SUMMARY RESULTS' });
+                                result.push(row);
+                            }
+                        }
+                        else result.push(row);
+                    })
+                    .on('end', () => {
+                        console.log('Success');
+                        res.status(200).json(result);
+                    })  
             });
     } catch (error) {
         console.error(error);

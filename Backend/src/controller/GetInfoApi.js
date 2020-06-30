@@ -1,8 +1,24 @@
 const fs = require('fs');
 const path = require('path');
 const util = require('util');
+const { request } = require('http');
+const { resolveSoa } = require('dns');
 const exec = util.promisify(require('child_process').exec);
 
+exports.GetSLOC = (req, res) => {
+    request = req.body;
+    username = request.username;
+    name = request.name;
+
+    fs.createReadStream(`../data/result/${username}/${name}/outfile_summary.csv`)
+        .pipe(csv())
+        .on('error', (err) => res.status(403).send({message: err}))
+        .on('data', row => {
+            if (row['0'] == 'Total');
+            result = parseInt(row['2']) + parseInt(row['3']);
+        })
+        .on('end', () => res.status(200).send({SLOC: result}));
+}
 
 exports.GetREADME = (req, res) => {
     request = req.body;

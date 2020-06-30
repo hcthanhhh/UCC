@@ -1,7 +1,5 @@
 const fs = require('fs');
 const csv = require('csv-parser');
-const { resolve } = require('path');
-const { rejects } = require('assert');
 
 function getsize (username, name) {
     return new Promise ((resolve, reject) => {

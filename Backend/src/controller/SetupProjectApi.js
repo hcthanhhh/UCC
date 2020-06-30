@@ -17,7 +17,7 @@ exports.CloneProject = (req, res) => {
         }
         else {
             await res.status(200).send({ message: 'Success' });
-            exec(`mkdir -p ../data/${username}/result/${name}`);
+            exec(`mkdir -p ../data/result/${username}/${name}`);
             console.log('Success');
         }
     });
@@ -36,7 +36,7 @@ exports.UploadProject = async (req, res) => {
         await exec(`mv ../data/${file.filename} ../data/${file.originalname}`);
         await exec(`unzip ../data/${file.originalname} -d ../data/${username}/${name}`);
         await exec(`rm ../data/${file.originalname}`);
-        await exec(`mkdir -p ../data/${username}/result/${name}`);
+        await exec(`mkdir -p ../data/result/${username}/${name}`);
         res.status(200).send({ message: 'Success' });
     } catch (error) {
         console.log("Error: ", error);
@@ -53,7 +53,7 @@ exports.DeleteProject = (req, res) => {
 
     try {
         exec(`rm -rf ../data/${username}/${name}`);
-        exec(`rm -rf ../data/${username}/result/${name}`);
+        exec(`rm -rf ../data/result/${username}/${name}`);
         res.status(200).send({ message: "Success" });
         console.log('Success');
     } catch (error) {

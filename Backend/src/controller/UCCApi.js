@@ -17,11 +17,11 @@ exports.UCCUrlWindows = async (req, res) => {
         noProfile: true
     });
 
-    await ps.addCommand(`./UCC/UCC -unified -dir ../data/${username}/${name} -outdir ../data/${username}/result/${name}`);
+    await ps.addCommand(`./UCC/UCC -unified -dir ../data/${username}/${name} -outdir ../data/result/${username}/${name}`);
     await ps.invoke().then(output => console.log(`res: ${output}`));
 
     var result = []
-    fs.createReadStream(`../data/${username}/result/${name}/TOTAL_outfile.csv`)
+    fs.createReadStream(`../data/result/${username}/${name}/TOTAL_outfile.csv`)
         .pipe(csv())
         .on('data', row => {
             if (check) {
@@ -51,11 +51,11 @@ exports.UCCUrlMac = async (req, res) => {
     console.log("Run UCC: ", username, name);
 
     try {
-        const { stdout, stderr } = await exec(`./UCC/UCC.mac -unified -dir ../data/${username}/${name} -outdir ../data/${username}/result/${name}`);
+        const { stdout, stderr } = await exec(`./UCC/UCC.mac -unified -dir ../data/${username}/${name} -outdir ../data/result/${username}/${name}`);
         console.log(`stdout: ${stdout}`);
         console.log(`stderr: ${stderr}`);
         var result = []
-        fs.createReadStream(`../data/${username}/result/${name}/TOTAL_outfile.csv`)
+        fs.createReadStream(`../data/result/${username}/${name}/TOTAL_outfile.csv`)
             .pipe(csv())
             .on('data', row => {
                 if (check) {
@@ -69,7 +69,7 @@ exports.UCCUrlMac = async (req, res) => {
             })
             .on('end', () => {
                 check = true;
-                fs.createReadStream(`../data/${username}/result/${name}/outfile_Summary.csv`)
+                fs.createReadStream(`../data/result/${username}/${name}/outfile_summary.csv`)
                     .pipe(csv())
                     .on('data', row => {
                         if (check) {
@@ -103,11 +103,11 @@ exports.UCCUrlLinux = async (req, res) => {
     check = true;
 
     try {
-        const { stdout, stderr } = await exec(`./UCC/UCC.linux -unified -dir ../data/${username}/${name} -outdir ../data/${username}/result/${name}`);
+        const { stdout, stderr } = await exec(`./UCC/UCC.linux -unified -dir ../data/${username}/${name} -outdir ../data/result/${username}/${name}`);
         console.log(`stdout: ${stdout}`);
         console.log(`stderr: ${stderr}`);
         var result = []
-        fs.createReadStream(`../data/${username}/result/${name}/TOTAL_outfile.csv`)
+        fs.createReadStream(`../data/result/${username}/${name}/TOTAL_outfile.csv`)
             .pipe(csv())
             .on('data', row => {
                 if (check) {
@@ -120,8 +120,24 @@ exports.UCCUrlLinux = async (req, res) => {
                 else result.push(row);
             })
             .on('end', () => {
-                res.status(200).json(result);
-                console.log('Success');
+                check = true;
+                fs.createReadStream(`../data/result/${username}/${name}/outfile_summary.csv`)
+                    .pipe(csv())
+                    .on('data', row => {
+                        if (check) {
+                            myrow = JSON.stringify(row);
+                            if (myrow.includes('"0":"Language"')) {
+                                check = false;
+                                result.push({ '0': 'KLOC SUMMARY RESULTS' });
+                                result.push(row);
+                            }
+                        }
+                        else result.push(row);
+                    })
+                    .on('end', () => {
+                        console.log('Success');
+                        res.status(200).json(result);
+                    })
             });
     } catch (error) {
         console.error(error);
@@ -137,11 +153,11 @@ exports.CompareMac = async (req, res) => {
 
     console.log("UCC Compare: ", username, name1, name2);
     try {
-        const { stdout, stderr } = await exec(`./UCC/UCC.mac -unified -d -dir ../data/${username}/${name1} ../data/${username}/${name2} -outdir ../data/${username}/result/compare/${name1}_${name2}/`);
+        const { stdout, stderr } = await exec(`./UCC/UCC.mac -unified -d -dir ../data/${username}/${name1} ../data/${username}/${name2} -outdir ../data/result/compare/${username}/${name1}_${name2}/`);
         console.log(`stdout: ${stdout}`);
         console.log(`stderr: ${stderr}`);
         var result = []
-        fs.createReadStream(`../data/${username}/result/compare/${name1}_${name2}/outfile_diff_results.csv`)
+        fs.createReadStream(`../data/result/compare/${username}/${name1}_${name2}/outfile_diff_results.csv`)
             .pipe(csv())
             .on('data', row => {
                 result.push(row);
@@ -165,11 +181,11 @@ exports.CompareLinux = async (req, res) => {
     await console.log("UCC Compare: ", username, name1, name2);
 
     try {
-        const { stdout, stderr } = await exec(`./UCC/UCC.linux -unified -d -dir ../data/${username}/${name1} ../data/${username}/${name2} -outdir ../data/${username}/result/compare/${name1}_${name2}/`);
+        const { stdout, stderr } = await exec(`./UCC/UCC.linux -unified -d -dir ../data/${username}/${name1} ../data/${username}/${name2} -outdir ../data/result/compare/${username}/${name1}_${name2}/`);
         console.log(`stdout: ${stdout}`);
         console.log(`stderr: ${stderr}`);
         var result = []
-        fs.createReadStream(`../data/${username}/result/compare/${name1}_${name2}/outfile_diff_results.csv`)
+        fs.createReadStream(`../data/result/compare/${username}/${name1}_${name2}/outfile_diff_results.csv`)
             .pipe(csv())
             .on('data', row => {
                 result.push(row);

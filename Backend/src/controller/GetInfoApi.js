@@ -59,9 +59,9 @@ exports.GetlistFile = async (req, res) => {
     try {
         // exec(`touch ../data/${username}/${name}/listFile.txt`);
         await exec(`tree ../data/${username}/${name} > ../data/${username}/${name}/fileList.txt`);
-        await exec(`tail -n +2 ../data/${username}/${name}/fileList.txt > ../data/${username}/result/${name}/fileList.txt`);
+        await exec(`tail -n +2 ../data/${username}/${name}/fileList.txt > ../data/result/${username}/${name}/fileList.txt`);
         res.set('Content-Type', 'text/plain');
-        res.status(200).sendFile(path.resolve(`../data/${username}/result/${name}/fileList.txt`));
+        res.status(200).sendFile(path.resolve(`../data/result/${username}/${name}/fileList.txt`));
         console.log('Success');
     } catch (err) {
         console.log("Error: ", err);

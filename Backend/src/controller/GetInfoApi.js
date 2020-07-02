@@ -1,8 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const util = require('util');
-const { request } = require('http');
-const { resolveSoa } = require('dns');
+const csv = require('csv-parser');
 const exec = util.promisify(require('child_process').exec);
 
 exports.GetSLOC = (req, res) => {
@@ -83,4 +82,72 @@ exports.GetlistFile = async (req, res) => {
         console.log("Error: ", err);
         res.send(404).send({ message: 'Error' });
     }
+}
+
+exports.GetResultUCC = (req, res) => {
+    request = req.body;
+    username = request.username;
+    name = request.name;
+
+    check = true;
+    result = [];
+
+    console.log("GetResultUCC: ", username, name);
+
+    fs.createReadStream(`../data/result/${username}/${name}/TOTAL_outfile.csv`)
+        .pipe(csv())
+        .on('error', (err) => {
+            console.log('Error');
+            res.status(403).send({message: err});
+        })
+        .on('data', row => {
+            if (check) {
+                myrow = JSON.stringify(row);
+                console.log(myrow);
+                if (myrow.includes("RESULTS FOR ALL NON-WEB LANGUAGE FILES")) {
+                    check = false;
+                    result.push({ '0': 'RESULTS FOR ALL NON-WEB LANGUAGE FILES' })
+                }
+            }
+            else result.push(row);
+        })
+        .on('end', () => {
+            console.log("Success");
+            res.status(200).send({result});
+        })
+}
+
+exports.GetSLOC = (req, res) => {
+    request = req.body;
+    username = request.username;
+    name = request.name;
+
+    console.log('getSLOC: ', username, name);
+
+    check = true;
+    jsonStr = '{"Type":[], "Total":{}}';
+    result = JSON.parse(jsonStr);
+    console.log(result);
+
+    fs.createReadStream(`../data/result/${username}/${name}/outfile_summary.csv`)
+            .pipe(csv())
+            .on('error', (err) => reject(err))
+            .on('data', row => {
+                if (check) {
+                    if (row["0"] == "Name") check = 0;
+                    console.log(row);
+                } 
+                else if (row["0"] != null) {
+                    console.log(row);
+                    temp = {Language: row["0"], 
+                            detail: {amount: parseInt(row["1"]), 
+                                    PhysicalSLOC: parseInt(row["2"]),
+                                    LogicalSLOC: parseInt(row["3"])
+                                }};
+                    result['Type'].push(temp);
+                }
+                if (row["0"] == "Total")
+                    result["Total"] = {SLOC: parseInt(row['2']) + parseInt(row['3'])};
+            })
+            .on('end', () => res.status(200).send(result));
 }

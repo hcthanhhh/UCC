@@ -17,27 +17,14 @@ exports.UCCUrlWindows = async (req, res) => {
         noProfile: true
     });
 
-    await ps.addCommand(`./UCC/UCC -unified -dir ../data/${username}/${name} -outdir ../data/result/${username}/${name}`);
-    await ps.invoke().then(output => console.log(`res: ${output}`));
-
-    var result = []
-    fs.createReadStream(`../data/result/${username}/${name}/TOTAL_outfile.csv`)
-        .pipe(csv())
-        .on('data', row => {
-            if (check) {
-                myrow = JSON.stringify(row);
-                console.log(myrow);
-                if (myrow.includes("RESULTS FOR ALL NON-WEB LANGUAGE FILES")) {
-                    check = false;
-                    result.push({ '0': 'RESULTS FOR ALL NON-WEB LANGUAGE FILES' })
-                }
-            }
-            else result.push(row);
-        })
-        .on('end', () => {
-            console.log('Success');
-            res.status(200).json(result);
-        });
+    try {
+        await ps.addCommand(`./UCC/UCC -unified -dir ../data/${username}/${name} -outdir ../data/result/${username}/${name}`);
+        await ps.invoke().then(output => console.log(`res: ${output}`));
+        res.status(200).send({message: "Success"});
+    } catch (error) {
+        console.log("Error: ", error);
+        res.status(403).send({message: "Error"});
+    }
 };
 
 exports.UCCUrlMac = async (req, res) => {
@@ -54,39 +41,7 @@ exports.UCCUrlMac = async (req, res) => {
         const { stdout, stderr } = await exec(`./UCC/UCC.mac -unified -dir ../data/${username}/${name} -outdir ../data/result/${username}/${name}`);
         console.log(`stdout: ${stdout}`);
         console.log(`stderr: ${stderr}`);
-        var result = []
-        fs.createReadStream(`../data/result/${username}/${name}/TOTAL_outfile.csv`)
-            .pipe(csv())
-            .on('data', row => {
-                if (check) {
-                    myrow = JSON.stringify(row);
-                    if (myrow.includes("RESULTS FOR ALL NON-WEB LANGUAGE FILES")) {
-                        check = false;
-                        result.push({ '0': 'RESULTS FOR ALL NON-WEB LANGUAGE FILES' });
-                    }
-                }
-                else result.push(row);
-            })
-            .on('end', () => {
-                check = true;
-                fs.createReadStream(`../data/result/${username}/${name}/outfile_summary.csv`)
-                    .pipe(csv())
-                    .on('data', row => {
-                        if (check) {
-                            myrow = JSON.stringify(row);
-                            if (myrow.includes('"0":"Language"')) {
-                                check = false;
-                                result.push({ '0': 'KLOC SUMMARY RESULTS' });
-                                result.push(row);
-                            }
-                        }
-                        else result.push(row);
-                    })
-                    .on('end', () => {
-                        console.log('Success');
-                        res.status(200).json(result);
-                    })  
-            });
+        res.status(200).send({message: "Success"});
     } catch (error) {
         console.error(error);
         res.status(404).send({ message: "Error" });
@@ -106,39 +61,7 @@ exports.UCCUrlLinux = async (req, res) => {
         const { stdout, stderr } = await exec(`./UCC/UCC.linux -unified -dir ../data/${username}/${name} -outdir ../data/result/${username}/${name}`);
         console.log(`stdout: ${stdout}`);
         console.log(`stderr: ${stderr}`);
-        var result = []
-        fs.createReadStream(`../data/result/${username}/${name}/TOTAL_outfile.csv`)
-            .pipe(csv())
-            .on('data', row => {
-                if (check) {
-                    myrow = JSON.stringify(row);
-                    if (myrow.includes("RESULTS FOR ALL NON-WEB LANGUAGE FILES")) {
-                        check = false;
-                        result.push({ '0': 'RESULTS FOR ALL NON-WEB LANGUAGE FILES' });
-                    }
-                }
-                else result.push(row);
-            })
-            .on('end', () => {
-                check = true;
-                fs.createReadStream(`../data/result/${username}/${name}/outfile_summary.csv`)
-                    .pipe(csv())
-                    .on('data', row => {
-                        if (check) {
-                            myrow = JSON.stringify(row);
-                            if (myrow.includes('"0":"Language"')) {
-                                check = false;
-                                result.push({ '0': 'KLOC SUMMARY RESULTS' });
-                                result.push(row);
-                            }
-                        }
-                        else result.push(row);
-                    })
-                    .on('end', () => {
-                        console.log('Success');
-                        res.status(200).json(result);
-                    })
-            });
+        res.status(200).send({message: "Success"});
     } catch (error) {
         console.error(error);
         res.status(404).send({ message: "Error" });

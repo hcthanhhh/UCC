@@ -112,8 +112,9 @@ exports.GetResultUCC = (req, res) => {
             else result.push(row);
         })
         .on('end', () => {
+            console.log(result);
             console.log("Success");
-            res.status(200).send({result});
+            res.status(200).send(result);
         })
 }
 

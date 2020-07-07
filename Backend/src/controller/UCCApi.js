@@ -18,7 +18,7 @@ exports.UCCUrlWindows = async (req, res) => {
     });
 
     try {
-        await ps.addCommand(`./UCC/UCC -unified -dir ../data/${username}/${name} -outdir ../data/result/${username}/${name}`);
+        await ps.addCommand(`./UCC/UCC -unified -dir '../data/${username}/${name}' -outdir '../data/result/${username}/${name}'`);
         await ps.invoke().then(output => console.log(`res: ${output}`));
         res.status(200).send({message: "Success"});
     } catch (error) {
@@ -38,7 +38,7 @@ exports.UCCUrlMac = async (req, res) => {
     console.log("Run UCC: ", username, name);
 
     try {
-        const { stdout, stderr } = await exec(`./UCC/UCC.mac -unified -dir ../data/${username}/${name} -outdir ../data/result/${username}/${name}`);
+        const { stdout, stderr } = await exec(`./UCC/UCC.mac -unified -dir '../data/${username}/${name}' -outdir '../data/result/${username}/${name}'`);
         console.log(`stdout: ${stdout}`);
         console.log(`stderr: ${stderr}`);
         res.status(200).send({message: "Success"});
@@ -58,7 +58,7 @@ exports.UCCUrlLinux = async (req, res) => {
     check = true;
 
     try {
-        const { stdout, stderr } = await exec(`./UCC/UCC.linux -unified -dir ../data/${username}/${name} -outdir ../data/result/${username}/${name}`);
+        const { stdout, stderr } = await exec(`./UCC/UCC.linux -unified -dir "../data/${username}/${name}" -outdir "../data/result/${username}/${name}"`);
         console.log(`stdout: ${stdout}`);
         console.log(`stderr: ${stderr}`);
         res.status(200).send({message: "Success"});
@@ -104,11 +104,11 @@ exports.CompareLinux = async (req, res) => {
     await console.log("UCC Compare: ", username, name1, name2);
 
     try {
-        const { stdout, stderr } = await exec(`./UCC/UCC.linux -unified -d -dir ../data/${username}/${name1} ../data/${username}/${name2} -outdir ../data/result/compare/${username}/${name1}_${name2}/`);
+        const { stdout, stderr } = await exec(`./UCC/UCC.linux -unified -d -dir '../data/${username}/${name1}' '../data/${username}/${name2}' -outdir '../data/result/compare/${username}/${name1}_${name2}/'`);
         console.log(`stdout: ${stdout}`);
         console.log(`stderr: ${stderr}`);
         var result = []
-        fs.createReadStream(`../data/result/compare/${username}/${name1}_${name2}/outfile_diff_results.csv`)
+        fs.createReadStream(`'../data/result/compare/${username}/${name1}_${name2}/outfile_diff_results.csv'`)
             .pipe(csv())
             .on('data', row => {
                 result.push(row);

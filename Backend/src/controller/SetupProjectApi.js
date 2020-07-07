@@ -32,11 +32,11 @@ exports.UploadProject = async (req, res) => {
     console.log("Upload Project: ", file.originalname, username, name);
 
     try {
-        await exec(`mkdir -p ../data/${username}/${name}`);
-        await exec(`mv ../data/${file.filename} ../data/${file.originalname}`);
-        await exec(`unzip ../data/${file.originalname} -d ../data/${username}/${name}`);
-        await exec(`rm ../data/${file.originalname}`);
-        await exec(`mkdir -p ../data/result/${username}/${name}`);
+        await exec(`mkdir -p '../data/${username}/${name}'`);
+        await exec(`mv '../data/${file.filename}' '../data/${file.originalname}'`);
+        await exec(`unzip '../data/${file.originalname}' -d '../data/${username}/${name}'`);
+        await exec(`rm '../data/${file.originalname}'`);
+        await exec(`mkdir -p '../data/result/${username}/${name}'`);
         res.status(200).send({ message: 'Success' });
     } catch (error) {
         console.log("Error: ", error);
@@ -52,8 +52,8 @@ exports.DeleteProject = (req, res) => {
     console.log("Delete GIT: ", username, name);
 
     try {
-        exec(`rm -rf ../data/${username}/${name}`);
-        exec(`rm -rf ../data/result/${username}/${name}`);
+        exec(`rm -rf '../data/${username}/${name}'`);
+        exec(`rm -rf '../data/result/${username}/${name}'`);
         res.status(200).send({ message: "Success" });
         console.log('Success');
     } catch (error) {

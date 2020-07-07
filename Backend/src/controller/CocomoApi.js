@@ -4,7 +4,7 @@ const csv = require('csv-parser');
 function getsize (username, name) {
     return new Promise ((resolve, reject) => {
         result = 0;
-            fs.createReadStream(`../data/result/${username}/${name}/outfile_summary.csv`)
+            fs.createReadStream(`'../data/result/${username}/${name}/outfile_summary.csv'`)
             .pipe(csv())
             .on('error', (err) => reject(err))
             .on('data', row => {

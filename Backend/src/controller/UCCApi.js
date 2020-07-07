@@ -108,7 +108,7 @@ exports.CompareLinux = async (req, res) => {
         console.log(`stdout: ${stdout}`);
         console.log(`stderr: ${stderr}`);
         var result = []
-        fs.createReadStream(`'../data/result/compare/${username}/${name1}_${name2}/outfile_diff_results.csv'`)
+        fs.createReadStream(`../data/result/compare/${username}/${name1}_${name2}/outfile_diff_results.csv`)
             .pipe(csv())
             .on('data', row => {
                 result.push(row);

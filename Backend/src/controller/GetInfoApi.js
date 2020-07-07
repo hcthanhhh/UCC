@@ -27,7 +27,7 @@ exports.GetREADME = (req, res) => {
     console.log("Get README.md: ", username, name);
     check = '';
 
-    fs.readdir(`'../data/${username}/${name}'`, (err, files) => {
+    fs.readdir(`../data/${username}/${name}`, (err, files) => {
         if (err) {
             console.log(err);
             res.status(404).send({ message: "Error" });
@@ -41,7 +41,7 @@ exports.GetREADME = (req, res) => {
         }
         if (files.length == 1) {
             check = files[0];
-            fs.readdir(`'../data/${username}/${name}/${check}'`, (err, file) => {
+            fs.readdir(`../data/${username}/${name}/${check}`, (err, file) => {
                 if (err) {
                     res.status(404).send({ message: "Error" });
                     return;
@@ -76,7 +76,7 @@ exports.GetlistFile = async (req, res) => {
         await exec(`tree '../data/${username}/${name}' > '../data/${username}/${name}/fileList.txt'`);
         await exec(`tail -n +2 '../data/${username}/${name}/fileList.txt' > '../data/result/${username}/${name}/fileList.txt'`);
         res.set('Content-Type', 'text/plain');
-        res.status(200).sendFile(path.resolve(`'../data/result/${username}/${name}/fileList.txt'`));
+        res.status(200).sendFile(path.resolve(`../data/result/${username}/${name}/fileList.txt`));
         console.log('Success');
     } catch (err) {
         console.log("Error: ", err);
@@ -94,7 +94,7 @@ exports.GetResultUCC = (req, res) => {
 
     console.log("GetResultUCC: ", username, name);
 
-    fs.createReadStream(`'../data/result/${username}/${name}/TOTAL_outfile.csv'`)
+    fs.createReadStream(`../data/result/${username}/${name}/TOTAL_outfile.csv`)
         .pipe(csv())
         .on('error', (err) => {
             console.log('Error');
@@ -130,7 +130,7 @@ exports.GetSLOC = (req, res) => {
     result = JSON.parse(jsonStr);
     console.log(result);
 
-    fs.createReadStream(`'../data/result/${username}/${name}/outfile_summary.csv'`)
+    fs.createReadStream(`../data/result/${username}/${name}/outfile_summary.csv`)
             .pipe(csv())
             .on('error', (err) => reject(err))
             .on('data', row => {

@@ -38,10 +38,9 @@ exports.UCCUrlMac = async (req, res) => {
     console.log("Run UCC: ", username, name);
 
     try {
-        const { stdout, stderr } = await exec(`./UCC/UCC.mac -unified -dir "../data/${username}/${name}" -outdir "../data/result/${username}/${name}"`);
+        const { stdout, stderr } = await exec(`./UCC/UCC.mac -unified -dir "../data/${username}/${name}' -outdir '../data/result/${username}/${name}'`);
         console.log(`stdout: ${stdout}`);
         console.log(`stderr: ${stderr}`);
-        console.log(`./UCC/UCC.mac -unified -dir "../data/${username}/${name}" -outdir "../data/result/${username}/${name}"`);
         res.status(200).send({message: "Success"});
     } catch (error) {
         console.error(error);

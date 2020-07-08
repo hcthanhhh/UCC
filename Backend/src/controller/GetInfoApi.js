@@ -136,7 +136,7 @@ exports.GetSLOC = (req, res) => {
                 result['Type'].push(temp);
             }
             if (row["0"] == "Total")
-                result["SLOC"] = parseInt(row['2']) + parseInt(row['3']);
+                result["SLOC"] = parseInt(row['3']);
         })
         .on('end', () => res.status(200).send(result));
 }

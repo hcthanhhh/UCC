@@ -4,21 +4,6 @@ const util = require('util');
 const csv = require('csv-parser');
 const exec = util.promisify(require('child_process').exec);
 
-exports.GetSLOC = (req, res) => {
-    request = req.body;
-    username = request.username;
-    name = request.name;
-
-    fs.createReadStream(`'../data/result/${username}/${name}/outfile_summary.csv'`)
-        .pipe(csv())
-        .on('error', (err) => res.status(403).send({message: err}))
-        .on('data', row => {
-            if (row['0'] == 'Total');
-            result = parseInt(row['2']) + parseInt(row['3']);
-        })
-        .on('end', () => res.status(200).send({SLOC: result}));
-}
-
 exports.GetREADME = (req, res) => {
     request = req.body;
     username = request.username;
@@ -98,7 +83,7 @@ exports.GetResultUCC = (req, res) => {
         .pipe(csv())
         .on('error', (err) => {
             console.log('Error');
-            res.status(403).send({message: err});
+            res.status(403).send({ message: err });
         })
         .on('data', row => {
             if (check) {
@@ -126,29 +111,32 @@ exports.GetSLOC = (req, res) => {
     console.log('getSLOC: ', username, name);
 
     check = true;
-    jsonStr = '{"Type":[], "Total":{}}';
+    jsonStr = '{"Type":[], "SLOC":0}';
     result = JSON.parse(jsonStr);
     console.log(result);
 
     fs.createReadStream(`../data/result/${username}/${name}/outfile_summary.csv`)
-            .pipe(csv())
-            .on('error', (err) => reject(err))
-            .on('data', row => {
-                if (check) {
-                    if (row["0"] == "Name") check = 0;
-                    console.log(row);
-                } 
-                else if (row["0"] != null) {
-                    console.log(row);
-                    temp = {Language: row["0"], 
-                            detail: {amount: parseInt(row["1"]), 
-                                    PhysicalSLOC: parseInt(row["2"]),
-                                    LogicalSLOC: parseInt(row["3"])
-                                }};
-                    result['Type'].push(temp);
-                }
-                if (row["0"] == "Total")
-                    result["Total"] = {SLOC: parseInt(row['2']) + parseInt(row['3'])};
-            })
-            .on('end', () => res.status(200).send(result));
+        .pipe(csv())
+        .on('error', (err) => reject(err))
+        .on('data', row => {
+            if (check) {
+                if (row["0"] == "Name") check = 0;
+                console.log(row);
+            }
+            else if (row["0"] != null) {
+                console.log(row);
+                temp = {
+                    Language: row["0"],
+                    detail: {
+                        amount: parseInt(row["1"]),
+                        PhysicalSLOC: parseInt(row["2"]),
+                        LogicalSLOC: parseInt(row["3"])
+                    }
+                };
+                result['Type'].push(temp);
+            }
+            if (row["0"] == "Total")
+                result["SLOC"] = parseInt(row['2']) + parseInt(row['3']);
+        })
+        .on('end', () => res.status(200).send(result));
 }

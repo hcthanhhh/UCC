@@ -3,6 +3,7 @@ const csv = require('csv-parser');
 const shell = require('node-powershell');
 const util = require('util');
 const exec = util.promisify(require('child_process').exec);
+const { GetSLOC } = require('./GetInfoApi');
 
 exports.UCCUrlWindows = async (req, res) => {
     request = req.body;
@@ -20,10 +21,11 @@ exports.UCCUrlWindows = async (req, res) => {
     try {
         await ps.addCommand(`./UCC/UCC -unified -dir '../data/${username}/${name}' -outdir '../data/result/${username}/${name}'`);
         await ps.invoke().then(output => console.log(`res: ${output}`));
-        res.status(200).send({message: "Success"});
+        // res.status(200).send({ message: "Success" });
+        GetSLOC(req, res);
     } catch (error) {
         console.log("Error: ", error);
-        res.status(403).send({message: "Error"});
+        res.status(403).send({ message: "Error" });
     }
 };
 
@@ -41,7 +43,8 @@ exports.UCCUrlMac = async (req, res) => {
         const { stdout, stderr } = await exec(`./UCC/UCC.mac -unified -dir '../data/${username}/${name}' -outdir '../data/result/${username}/${name}'`);
         console.log(`stdout: ${stdout}`);
         console.log(`stderr: ${stderr}`);
-        res.status(200).send({message: "Success"});
+        // res.status(200).send({ message: "Success" });
+        GetSLOC(req, res);
     } catch (error) {
         console.error(error);
         res.status(404).send({ message: "Error" });
@@ -61,7 +64,8 @@ exports.UCCUrlLinux = async (req, res) => {
         const { stdout, stderr } = await exec(`./UCC/UCC.linux -unified -dir "../data/${username}/${name}" -outdir "../data/result/${username}/${name}"`);
         console.log(`stdout: ${stdout}`);
         console.log(`stderr: ${stderr}`);
-        res.status(200).send({message: "Success"});
+        // res.status(200).send({ message: "Success" });
+        GetSLOC(req, res);
     } catch (error) {
         console.error(error);
         res.status(404).send({ message: "Error" });

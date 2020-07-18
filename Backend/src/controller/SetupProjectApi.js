@@ -1,6 +1,7 @@
 const util = require('util');
 const download = require('download-git-repo');
 const exec = util.promisify(require('child_process').exec);
+const { getProjectSize } = require('./GetInfoApi')
 
 exports.CloneProject = (req, res) => {
     request = req.body;
@@ -16,7 +17,8 @@ exports.CloneProject = (req, res) => {
             console.log('Error: ', e);
         }
         else {
-            await res.status(200).send({ message: 'Success' });
+            // await res.status(200).send({ message: 'Success' });
+            await getProjectSize(req, res);
             exec(`mkdir -p ../data/result/${username}/${name}`);
             console.log('Success');
         }
@@ -37,7 +39,8 @@ exports.UploadProject = async (req, res) => {
         await exec(`unzip '../data/${file.originalname}' -d '../data/${username}/${name}'`);
         await exec(`rm '../data/${file.originalname}'`);
         await exec(`mkdir -p '../data/result/${username}/${name}'`);
-        res.status(200).send({ message: 'Success' });
+        // res.status(200).send({ message: 'Success' });
+        getProjectSize(req, res);
     } catch (error) {
         console.log("Error: ", error);
         res.status(404).send({ message: 'Error' });

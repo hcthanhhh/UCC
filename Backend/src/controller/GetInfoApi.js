@@ -3,6 +3,7 @@ const path = require('path');
 const util = require('util');
 const csv = require('csv-parser');
 const exec = util.promisify(require('child_process').exec);
+const getSize = require('get-folder-size');
 
 exports.GetREADME = (req, res) => {
     request = req.body;
@@ -139,4 +140,14 @@ exports.GetSLOC = (req, res) => {
                 result["SLOC"] = parseInt(row['3']);
         })
         .on('end', () => res.status(200).send(result));
+}
+
+exports.getUserSize = async (req, res) => {
+    let request = req.body;
+    let username = request.username;
+
+    getSize(`../data/${username}`, (err, size) => {
+        if (err) res.status(403).send({ 'message': err });
+        else res.status(200).send({ 'size': size });
+    })
 }

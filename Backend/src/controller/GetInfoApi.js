@@ -200,3 +200,80 @@ exports.getProjectSize = async (req, res) => {
         else res.status(200).send({ 'size': size });
     })
 }
+
+
+function GetCyclomaticResult(username, name) {
+    return new Promise((resolve, reject) => {
+        result = [];
+        low = 0;
+        medium = 0;
+        high = 0;
+        fs.createReadStream(`../data/result/${username}/${name}/outfile_cyclomatic_cplx.csv`)
+            .pipe(csv())
+            .on('error', (err) => reject(err))
+            .on('data', row => {
+                if (row['4'] != null)
+                    switch (row['4']) {
+                        case 'Low': low += 1; break;
+                        case 'Medium': medium += 1; break;
+                        case 'High': high += 1; break;
+                    }
+                if (row['3'] != null)
+                    switch (row['3']) {
+                        case 'Low': low += 1; break;
+                        case 'Medium': medium += 1; break;
+                        case 'High': high += 1; break;
+                    }
+                myrow = JSON.stringify(row);
+                if (myrow.includes("RESULTS BY FILE")) {
+                    result.push({ '0': 'RESULTS BY FILES' });
+                    result.push({ '0': "Cyclomatic Complexity" })
+                }
+                if (row['5'] != null && row['5'].includes('/') && (!row['5'].includes('Totals/Functions')))
+                    row['5'] = row['5'].substr(row['5'].lastIndexOf("/"), row['5'].length);
+                if (row['0'] != null) {
+                    row['0'] = row['0'].trim();
+                    if (row['0'].includes('RESULTS BY FUNCTION')) {
+                        result.push({
+                            'Ratio Result By Files': {
+                                'Low': low,
+                                'Medium': medium,
+                                'High': high
+                            }
+                        });
+                        low = 0;
+                        medium = 0;
+                        high = 0;
+                    }
+                    result.push(row);
+                    console.log(low, medium, high);
+                }
+            })
+            .on('end', () => {
+                result.push({
+                    'Ratio Result by Function': {
+                        'Low': low,
+                        'Medium': medium,
+                        'High': high
+                    }
+                })
+                // console.log(result);
+                resolve(result);
+            })
+    })
+}
+
+exports.Cyclomatic = async (req, res) => {
+    request = req.body;
+    username = request.username;
+    name = request.name;
+
+    console.log('Cyclomatic: ', username, name);
+    try {
+        result = await GetCyclomaticResult(username, name);
+        // console.log(result);
+        res.status(200).send(result);
+    } catch (error) {
+        res.status(200).send({ message: 'No Result' });
+    }
+}

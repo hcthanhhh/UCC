@@ -7,7 +7,7 @@ const multer = require('multer');
 const { Hello } = require('../controller/ApiController');
 const { CloneProject, UploadProject, DeleteProject, UpdateProject } = require('../controller/SetupProjectApi');
 const { UCCUrlMac, UCCUrlWindows, UCCUrlLinux, CompareMac, CompareLinux } = require('../controller/UCCApi');
-const { GetREADME, GetlistFile, GetResultUCC, GetSLOC, getUserSize, getProjectSize, Cyclomatic } = require('../controller/GetInfoApi');
+const { GetREADME, GetlistFile, GetResultUCC, GetSLOCandSize, GetSLOC, getUserSize, getProjectSize, Cyclomatic } = require('../controller/GetInfoApi');
 const { CalculateUCP } = require('../controller/UCPApi');
 const { BasicCocomo, IntermediateCocomo, DetailedCocomo } = require('../controller/CocomoApi');
 
@@ -30,6 +30,7 @@ router.post('/Compare', CompareLinux);
 router.post('/GetInfo', GetREADME);
 router.post('/GetlistFile', GetlistFile);
 router.post('/GetResultUCC', GetResultUCC);
+router.post('/GetSLOCandSize', GetSLOCandSize);
 router.post('/GetSLOC', GetSLOC);
 router.post('/getUserSize', getUserSize);
 router.post('/getProjectSize', getProjectSize);

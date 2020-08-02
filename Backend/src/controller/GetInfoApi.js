@@ -104,7 +104,7 @@ exports.GetResultUCC = (req, res) => {
         })
 }
 
-exports.GetSLOC = (req, res) => {
+exports.GetSLOCandSize = (req, res) => {
     request = req.body;
     username = request.username;
     name = request.name;
@@ -142,7 +142,7 @@ exports.GetSLOC = (req, res) => {
         .on('end', () => res.status(200).send(result));
 }
 
-exports.GetSLOCandSize = (req, res) => {
+exports.GetSLOC = (req, res) => {
     request = req.body;
     username = request.username;
     name = request.name;
@@ -150,7 +150,7 @@ exports.GetSLOCandSize = (req, res) => {
     console.log('getSLOC: ', username, name);
 
     check = true;
-    jsonStr = '{"Type":[], "SLOC":0}';
+    jsonStr = '{"SLOC":0}';
     result = JSON.parse(jsonStr);
     console.log(result);
 
@@ -158,22 +158,6 @@ exports.GetSLOCandSize = (req, res) => {
         .pipe(csv())
         .on('error', (err) => reject(err))
         .on('data', row => {
-            if (check) {
-                if (row["0"] == "Name") check = 0;
-                console.log(row);
-            }
-            else if (row["0"] != null) {
-                console.log(row);
-                temp = {
-                    Language: row["0"],
-                    detail: {
-                        amount: parseInt(row["1"]),
-                        PhysicalSLOC: parseInt(row["2"]),
-                        LogicalSLOC: parseInt(row["3"])
-                    }
-                };
-                result['Type'].push(temp);
-            }
             if (row["0"] == "Total")
                 result["SLOC"] = parseInt(row['3']);
         })

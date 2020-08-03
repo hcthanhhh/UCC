@@ -278,5 +278,134 @@ exports.Hello = (req, res) => {
     project2 = request.project2;
     console.log(username, project1, project2);
 
-    res.status(200).send({ message: 'Hello World' });
+
+    res.status(200).send({
+        message: 'API',
+        API: [
+            {
+                'type': 'Setup Project API',
+                data: [
+                    {
+                        'Url': 'api/CloneGit',
+                        'description': ''
+                    },
+                    {
+                        'Url': 'api/UploadProject',
+                        'description': ''
+                    },
+                    {
+                        'Url': 'api/DeleteGit',
+                        'description': ''
+                    },
+                ]
+            },
+            {
+                'type': 'UCC API',
+                data: [
+                    {
+                        'Url': 'api/UCCUrlMac',
+                        'description': ''
+                    }
+                ]
+            },
+            {
+                'type': 'Get Info API',
+                data: [
+                    {
+                        'Url': 'api/GetInfo',
+                        'description': ''
+                    },
+                    {
+                        'Url': 'api/GetlistFile',
+                        'description': ''
+                    },
+                    {
+                        'Url': 'api/GetResultUCC',
+                        'description': ''
+                    },
+                    {
+                        'Url': 'api/GetSLOCandSize',
+                        'description': ''
+                    },
+                    {
+                        'Url': 'api/GetSLOC',
+                        'description': ''
+                    },
+                    {
+                        'Url': 'api/getUserSize',
+                        'description': ''
+                    },
+                    {
+                        'Url': 'api/getProjectSize',
+                        'description': ''
+                    },
+                    {
+                        'Url': 'api/GetCyclomatic',
+                        'description': ''
+                    },
+                ]
+            },
+            {
+                'type': 'UCP API',
+                data: [
+                    {
+                        'Url': 'api/CalculateUCP',
+                        'description': ''
+                    },
+                ]
+            },
+            {
+                'type': 'COCOMO API',
+                data: [
+                    {
+                        'Url': 'api/BasicCocomo',
+                        'description': ''
+                    },
+                    {
+                        'Url': 'api/IntermediateCocomo',
+                        'description': ''
+                    },
+                    {
+                        'Url': 'api/DetailedCocomo',
+                        'description': ''
+                    },
+                ]
+            },
+        ]
+    });
 }
+
+/*
+router.post('/CloneGit', CloneProject);
+router.post('/UploadProject', upload.single('file'), UploadProject);
+router.post('/DeleteGit', DeleteProject);
+router.get('/UpdateProject', UpdateProject);
+
+// UCC API
+router.post('/UCCUrlWindows', UCCUrlWindows);
+router.post('/UCCUrlMac', UCCUrlMac);
+router.post('/UCCUrlLinux', UCCUrlLinux);
+router.post('/CompareMac', CompareMac);
+router.post('/Compare', CompareLinux);
+
+// Get Info API
+router.post('/GetInfo', GetREADME);
+router.post('/GetlistFile', GetlistFile);
+router.post('/GetResultUCC', GetResultUCC);
+router.post('/GetSLOCandSize', GetSLOCandSize);
+router.post('/GetSLOC', GetSLOC);
+router.post('/getUserSize', getUserSize);
+router.post('/getProjectSize', getProjectSize);
+router.post('/GetCyclomatic', Cyclomatic);
+
+// UCP API
+router.post('/CalculateUCP', CalculateUCP);
+
+// Cocomo API
+router.post('/BasicCocomo', BasicCocomo);
+router.post('/IntermediateCocomo', IntermediateCocomo);
+router.post('/DetailedCocomo', DetailedCocomo);
+
+// TEST API
+router.get('/Hello', Hello);
+*/

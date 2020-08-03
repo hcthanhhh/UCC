@@ -7,7 +7,7 @@ const multer = require('multer');
 const { Hello } = require('../controller/ApiController');
 const { CloneProject, UploadProject, DeleteProject, UpdateProject } = require('../controller/SetupProjectApi');
 const { UCCUrlMac, UCCUrlWindows, UCCUrlLinux, CompareMac, CompareLinux } = require('../controller/UCCApi');
-const { GetREADME, GetlistFile, GetResultUCC, GetSLOCandSize, GetSLOC, getUserSize, getProjectSize, Cyclomatic } = require('../controller/GetInfoApi');
+const { GetREADME, GetlistFile, GetResultUCC, GetSLOCandSize, GetSLOC, getUserSize, getProjectSize, Cyclomatic, RatioCyclomatic } = require('../controller/GetInfoApi');
 const { CalculateUCP } = require('../controller/UCPApi');
 const { BasicCocomo, IntermediateCocomo, DetailedCocomo } = require('../controller/CocomoApi');
 
@@ -32,9 +32,10 @@ router.post('/GetlistFile', GetlistFile);
 router.post('/GetResultUCC', GetResultUCC);
 router.post('/GetSLOCandSize', GetSLOCandSize);
 router.post('/GetSLOC', GetSLOC);
-router.post('/getUserSize', getUserSize);
-router.post('/getProjectSize', getProjectSize);
+router.post('/GetUserSize', getUserSize);
+router.post('/GetProjectSize', getProjectSize);
 router.post('/GetCyclomatic', Cyclomatic);
+router.post('/GetRatioCyclomatic', RatioCyclomatic);
 
 // UCP API
 router.post('/CalculateUCP', CalculateUCP);

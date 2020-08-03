@@ -4,6 +4,7 @@ const util = require('util');
 const csv = require('csv-parser');
 const exec = util.promisify(require('child_process').exec);
 const getSize = require('get-folder-size');
+const { UV_FS_O_FILEMAP } = require('constants');
 
 exports.GetREADME = (req, res) => {
     request = req.body;
@@ -179,6 +180,120 @@ exports.getProjectSize = async (req, res) => {
     })
 }
 
+function GetCyclomaticResultFormatted(username, name) {
+    return new Promise((resolve, reject) => {
+        result = {
+            "Result by File":
+            {
+                "listFile": [],
+                "total": {
+                    "function": 0,
+                    "file": 0,
+                },
+                "Average": {
+                    "function": 0,
+                    "file": 0,
+                },
+                "Ratio": {}
+            },
+            "Result by Function": {
+                "listFunction": [],
+                "total": {
+                    "function": 0,
+                    "file": 0,
+                },
+                "Average": {
+                    "function": 0,
+                    "file": 0,
+                },
+                "Ratio": {}
+            },
+        };
+        console.log(result);
+        check = 0;
+        low = 0;
+        medium = 0;
+        high = 0;
+        ntemp = 0;
+        temp = [];
+        risk = 0;
+        filename = 0;
+        fs.createReadStream(`../data/result/${username}/${name}/outfile_cyclomatic_cplx.csv`)
+            .pipe(csv())
+            .on('error', (err) => reject(err))
+            .on('data', row => {
+                if (row['0'] != null) {
+                    if (row["0"].includes('CC1')) {
+                        ntemp = 0;
+                        while (row[ntemp] != undefined) {
+                            temp.push(row[ntemp]);
+                            if (row[ntemp].includes("Risk")) risk = ntemp;
+                            if (row[ntemp].includes("File Name")) filename = ntemp;
+                            ntemp++;
+                        }
+                    }
+
+                    row['0'] = row['0'].trim();
+                    if (row['0'].includes('RESULTS BY FUNCTION')) {
+                        check = 1;
+                        result["Result by File"]["Ratio"] = {
+                            'Low': low,
+                            'Medium': medium,
+                            'High': high
+                        };
+                        low = 0;
+                        medium = 0;
+                        high = 0;
+                        temp = [];
+                        ntemp = 0;
+                    }
+                }
+
+                myrow = JSON.stringify(row);
+                if (row[filename] != null && row[filename].includes('/') && (!row[filename].includes('Totals/Functions')))
+                    row[filename] = row[filename].substr(row[filename].lastIndexOf("/") + 1, row[filename].length);
+
+
+                //Get Ratio
+                if (row[risk] != null)
+                    switch (row[risk]) {
+                        case 'Low': low += 1; break;
+                        case 'Medium': medium += 1; break;
+                        case 'High': high += 1; break;
+                    }
+                if (row[risk] != null)
+                    switch (row[risk]) {
+                        case 'Low': low += 1; break;
+                        case 'Medium': medium += 1; break;
+                        case 'High': high += 1; break;
+                    }
+                //Get Ratio
+
+                if ((row[risk] != null) && (row[risk].includes('Low') || row[risk].includes('Medium') || row[risk].includes('High'))) {
+                    console.log(row)
+
+                    jsonStr = '{';
+                    for (i = 0; i < ntemp; i++) {
+                        jsonStr += '"' + temp[i] + '":"' + row[i] + '",'
+                    }
+                    jsonStr = jsonStr.slice(0, jsonStr.length - 1);
+                    jsonStr += '}';
+                    resultPush = JSON.parse(jsonStr);
+                    if (!check) result["Result by File"]['listFile'].push({
+                        resultPush
+                    })
+                    else result["Result by Function"]['listFunction'].push({
+                        resultPush
+                    })
+                }
+
+            })
+            .on('end', () => {
+                resolve(result);
+            })
+    })
+}
+
 
 function GetCyclomaticResult(username, name) {
     return new Promise((resolve, reject) => {
@@ -196,8 +311,8 @@ function GetCyclomaticResult(username, name) {
                         case 'Medium': medium += 1; break;
                         case 'High': high += 1; break;
                     }
-                if (row['3'] != null)
-                    switch (row['3']) {
+                if (row['2'] != null)
+                    switch (row['2']) {
                         case 'Low': low += 1; break;
                         case 'Medium': medium += 1; break;
                         case 'High': high += 1; break;
@@ -205,7 +320,7 @@ function GetCyclomaticResult(username, name) {
                 myrow = JSON.stringify(row);
                 if (myrow.includes("RESULTS BY FILE")) {
                     result.push({ '0': 'RESULTS BY FILES' });
-                    result.push({ '0': "Cyclomatic Complexity" })
+                    result.push({ '0': "Cyclomatic Complexity" });
                 }
                 if (row['5'] != null && row['5'].includes('/') && (!row['5'].includes('Totals/Functions')))
                     row['5'] = row['5'].substr(row['5'].lastIndexOf("/"), row['5'].length);
@@ -234,7 +349,6 @@ function GetCyclomaticResult(username, name) {
                         'High': high
                     }
                 })
-                // console.log(result);
                 resolve(result);
             })
     })
@@ -256,8 +370,8 @@ function GetRatioCyclomaticResult(username, name) {
                         case 'Medium': medium += 1; break;
                         case 'High': high += 1; break;
                     }
-                if (row['3'] != null)
-                    switch (row['3']) {
+                if (row['2'] != null)
+                    switch (row['2']) {
                         case 'Low': low += 1; break;
                         case 'Medium': medium += 1; break;
                         case 'High': high += 1; break;
@@ -286,11 +400,26 @@ function GetRatioCyclomaticResult(username, name) {
                         'High': high
                     }
                 })
-                // console.log(result);
                 resolve(result);
             })
     })
 }
+exports.CyclomaticFormatted = async (req, res) => {
+    request = req.body;
+    username = request.username;
+    name = request.name;
+
+    console.log('Cyclomatic: ', username, name);
+    try {
+        result = await GetCyclomaticResultFormatted(username, name);
+        console.log('Success');
+        res.status(200).send(result);
+    } catch (error) {
+        console.log('Error');
+        res.status(200).send({ message: 'No Result' });
+    }
+}
+
 
 exports.Cyclomatic = async (req, res) => {
     request = req.body;

@@ -89,7 +89,6 @@ exports.GetResultUCC = (req, res) => {
         .on('data', row => {
             if (check) {
                 myrow = JSON.stringify(row);
-                console.log(myrow);
                 if (myrow.includes("RESULTS FOR ALL NON-WEB LANGUAGE FILES")) {
                     check = false;
                     result.push({ '0': 'RESULTS FOR ALL NON-WEB LANGUAGE FILES' })
@@ -98,7 +97,6 @@ exports.GetResultUCC = (req, res) => {
             else result.push(row);
         })
         .on('end', () => {
-            console.log(result);
             console.log("Success");
             res.status(200).send(result);
         })
@@ -114,7 +112,6 @@ exports.GetSLOCandSize = (req, res) => {
     check = true;
     jsonStr = '{"Type":[], "SLOC":0}';
     result = JSON.parse(jsonStr);
-    console.log(result);
 
     fs.createReadStream(`../data/result/${username}/${name}/outfile_summary.csv`)
         .pipe(csv())
@@ -122,10 +119,8 @@ exports.GetSLOCandSize = (req, res) => {
         .on('data', row => {
             if (check) {
                 if (row["0"] == "Name") check = 0;
-                console.log(row);
             }
             else if (row["0"] != null) {
-                console.log(row);
                 temp = {
                     Language: row["0"],
                     detail: {
@@ -152,7 +147,6 @@ exports.GetSLOC = (req, res) => {
     check = true;
     jsonStr = '{"SLOC":0}';
     result = JSON.parse(jsonStr);
-    console.log(result);
 
     fs.createReadStream(`../data/result/${username}/${name}/outfile_summary.csv`)
         .pipe(csv())
@@ -230,7 +224,6 @@ function GetCyclomaticResult(username, name) {
                         high = 0;
                     }
                     result.push(row);
-                    console.log(low, medium, high);
                 }
             })
             .on('end', () => {
@@ -307,9 +300,10 @@ exports.Cyclomatic = async (req, res) => {
     console.log('Cyclomatic: ', username, name);
     try {
         result = await GetCyclomaticResult(username, name);
-        // console.log(result);
+        console.log('Success');
         res.status(200).send(result);
     } catch (error) {
+        console.log('Error');
         res.status(200).send({ message: 'No Result' });
     }
 }
@@ -322,9 +316,10 @@ exports.RatioCyclomatic = async (req, res) => {
     console.log('Ratio of Cyclomatic: ', username, name);
     try {
         result = await GetRatioCyclomaticResult(username, name);
-        // console.log(result);
+        console.log('Success');
         res.status(200).send(result);
     } catch (error) {
+        console.log('Error');
         res.status(200).send({ message: 'No Result' });
     }
 }

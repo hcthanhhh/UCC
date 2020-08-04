@@ -34,9 +34,9 @@ router.post('/GetSLOCandSize', GetSLOCandSize);
 router.post('/GetSLOC', GetSLOC);
 router.post('/GetUserSize', getUserSize);
 router.post('/GetProjectSize', getProjectSize);
-router.post('/GetCyclomatic', Cyclomatic);
+router.post('/GetCyclomatic', CyclomaticFormatted);
 router.post('/GetRatioCyclomatic', RatioCyclomatic);
-router.post('/GetCyclomaticFormatted', CyclomaticFormatted);
+router.post('/GetCyclomaticFormatted', Cyclomatic);
 
 // UCP API
 router.post('/CalculateUCP', CalculateUCP);

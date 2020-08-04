@@ -186,42 +186,37 @@ function GetCyclomaticResultFormatted(username, name) {
             "Result by File":
             {
                 "listFile": [],
-                "total": {
-                    "function": 0,
-                    "file": 0,
-                },
-                "Average": {
-                    "function": 0,
-                    "file": 0,
-                },
-                "Ratio": {}
+                "Ratio": {
+                    'Low': 0,
+                    'Medium': 0,
+                    'High': 0,
+                }
             },
             "Result by Function": {
                 "listFunction": [],
-                "total": {
-                    "function": 0,
-                    "file": 0,
-                },
-                "Average": {
-                    "function": 0,
-                    "file": 0,
-                },
-                "Ratio": {}
+                "Ratio": {
+                    'Low': 0,
+                    'Medium': 0,
+                    'High': 0,
+                }
             },
+            "total": {},
+            "average": {},
         };
         console.log(result);
         check = 0;
-        low = 0;
-        medium = 0;
-        high = 0;
         ntemp = 0;
         temp = [];
         risk = 0;
         filename = 0;
+        countFile = 0;
+        countFunction = 0;
         fs.createReadStream(`../data/result/${username}/${name}/outfile_cyclomatic_cplx.csv`)
             .pipe(csv())
             .on('error', (err) => reject(err))
             .on('data', row => {
+                console.log(row);
+                console.log(countFile);
                 if (row['0'] != null) {
                     if (row["0"].includes('CC1')) {
                         ntemp = 0;
@@ -232,61 +227,74 @@ function GetCyclomaticResultFormatted(username, name) {
                             ntemp++;
                         }
                     }
-
-                    row['0'] = row['0'].trim();
-                    if (row['0'].includes('RESULTS BY FUNCTION')) {
+                    else if (row['0'].includes('RESULTS BY FUNCTION')) {
+                        console.log('aaaaaaaa');
                         check = 1;
-                        result["Result by File"]["Ratio"] = {
-                            'Low': low,
-                            'Medium': medium,
-                            'High': high
-                        };
-                        low = 0;
-                        medium = 0;
-                        high = 0;
                         temp = [];
                         ntemp = 0;
                     }
+                    else if (row['0'].includes('Cyclomatic')) { }
+                    else if (row[risk].includes('Totals')) {
+                        if (check) {
+                            a = '{';
+                            for (i = 0; i < risk; i++) {
+                                a += `"${temp[i]}":"${row[i]}",`
+                            }
+                            a = a.substr(0, a.length - 1);
+                            a += '}';
+                            result["total"] = JSON.parse(a);
+                            result["total"] = {
+                                ...result["total"],
+                                'functions': countFunction,
+                                'files': countFile,
+                            }
+                        }
+                    }
+                    else if (row[risk].includes('Average')) {
+                        if (check) {
+                            a = '{';
+                            for (i = 0; i < risk; i++) {
+                                a += `"${temp[i]}":"${row[i]}",`
+                            }
+                            a = a.substr(0, a.length - 1);
+                            a += '}';
+                            result["average"] = JSON.parse(a);
+                            result["average"] = {
+                                ...result["average"],
+                                'functions per file': countFunction / countFile,
+                            }
+                        }
+                    }
+                    else {
+                        row[filename] = row[filename].substr(13 + username.length + name.length, row['5'].length);
+                        a = '{';
+                        for (i = 0; i < ntemp; i++) {
+                            a += `"${temp[i]}":"${row[i]}",`
+                        }
+                        a = a.substr(0, a.length - 1);
+                        // console.log(a);
+                        a += '}';
+                        console.log(check);
+                        if (!check) {
+                            countFile += 1;
+                            switch (row[risk]) {
+                                case 'Low': result["Result by File"]["Ratio"]["Low"] += 1; break;
+                                case 'Medium': result["Result by File"]["Ratio"]["Medium"] += 1; break;
+                                case 'High': result["Result by File"]["Ratio"]["High"] += 1; break;
+                            }
+                            result['Result by File']['listFile'].push(JSON.parse(a));
+                        }
+                        else {
+                            countFunction += 1;
+                            switch (row[risk]) {
+                                case 'Low': result["Result by Function"]["Ratio"]["Low"] += 1; break;
+                                case 'Medium': result["Result by Function"]["Ratio"]["Medium"] += 1; break;
+                                case 'High': result["Result by Function"]["Ratio"]["High"] += 1; break;
+                            }
+                            result['Result by Function']['listFunction'].push(JSON.parse(a));
+                        }
+                    }
                 }
-
-                myrow = JSON.stringify(row);
-                if (row[filename] != null && row[filename].includes('/') && (!row[filename].includes('Totals/Functions')))
-                    row[filename] = row[filename].substr(row[filename].lastIndexOf("/") + 1, row[filename].length);
-
-
-                //Get Ratio
-                if (row[risk] != null)
-                    switch (row[risk]) {
-                        case 'Low': low += 1; break;
-                        case 'Medium': medium += 1; break;
-                        case 'High': high += 1; break;
-                    }
-                if (row[risk] != null)
-                    switch (row[risk]) {
-                        case 'Low': low += 1; break;
-                        case 'Medium': medium += 1; break;
-                        case 'High': high += 1; break;
-                    }
-                //Get Ratio
-
-                if ((row[risk] != null) && (row[risk].includes('Low') || row[risk].includes('Medium') || row[risk].includes('High'))) {
-                    console.log(row)
-
-                    jsonStr = '{';
-                    for (i = 0; i < ntemp; i++) {
-                        jsonStr += '"' + temp[i] + '":"' + row[i] + '",'
-                    }
-                    jsonStr = jsonStr.slice(0, jsonStr.length - 1);
-                    jsonStr += '}';
-                    resultPush = JSON.parse(jsonStr);
-                    if (!check) result["Result by File"]['listFile'].push({
-                        resultPush
-                    })
-                    else result["Result by Function"]['listFunction'].push({
-                        resultPush
-                    })
-                }
-
             })
             .on('end', () => {
                 resolve(result);
@@ -356,50 +364,53 @@ function GetCyclomaticResult(username, name) {
 
 function GetRatioCyclomaticResult(username, name) {
     return new Promise((resolve, reject) => {
-        result = [];
-        low = 0;
-        medium = 0;
-        high = 0;
+        result = {
+            "Ratio Result by File": {
+                "Low": 0,
+                "Medium": 0,
+                "High": 0
+            },
+            "Ratio Result by Function": {
+                "Low": 0,
+                "Medium": 0,
+                "High": 0
+            }
+        };
+        check = 0;
+        risk = 0;
         fs.createReadStream(`../data/result/${username}/${name}/outfile_cyclomatic_cplx.csv`)
             .pipe(csv())
             .on('error', (err) => reject(err))
             .on('data', row => {
-                if (row['4'] != null)
-                    switch (row['4']) {
-                        case 'Low': low += 1; break;
-                        case 'Medium': medium += 1; break;
-                        case 'High': high += 1; break;
+                if (row["0"] != null) {
+                    if (row["0"].includes('CC1')) {
+                        ntemp = 0;
+                        while (row[ntemp] != undefined) {
+                            if (row[ntemp].includes("Risk")) risk = ntemp;
+                            ntemp++;
+                        }
                     }
-                if (row['2'] != null)
-                    switch (row['2']) {
-                        case 'Low': low += 1; break;
-                        case 'Medium': medium += 1; break;
-                        case 'High': high += 1; break;
+                    else if (row['0'].includes('RESULTS BY FUNCTION')) {
+                        check = 1;
+                        ntemp = 0;
                     }
-                if (row['0'] != null) {
-                    row['0'] = row['0'].trim();
-                    if (row['0'].includes('RESULTS BY FUNCTION')) {
-                        result.push({
-                            'Ratio Result By Files': {
-                                'Low': low,
-                                'Medium': medium,
-                                'High': high
+                    if (row[risk] != null) {
+                        if (!check)
+                            switch (row[risk]) {
+                                case 'Low': result["Ratio Result by File"]["Low"] += 1; break;
+                                case 'Medium': result["Ratio Result by File"]["Medium"] += 1; break;
+                                case 'High': result["Ratio Result by File"]["High"] += 1; break;
                             }
-                        });
-                        low = 0;
-                        medium = 0;
-                        high = 0;
+                        else
+                            switch (row[risk]) {
+                                case 'Low': result["Ratio Result by Function"]["Low"] += 1; break;
+                                case 'Medium': result["Ratio Result by Function"]["Medium"] += 1; break;
+                                case 'High': result["Ratio Result by Function"]["High"] += 1; break;
+                            }
                     }
                 }
             })
             .on('end', () => {
-                result.push({
-                    'Ratio Result by Function': {
-                        'Low': low,
-                        'Medium': medium,
-                        'High': high
-                    }
-                })
                 resolve(result);
             })
     })

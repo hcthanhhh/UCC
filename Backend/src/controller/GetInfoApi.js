@@ -4,7 +4,6 @@ const util = require('util');
 const csv = require('csv-parser');
 const exec = util.promisify(require('child_process').exec);
 const getSize = require('get-folder-size');
-const { UV_FS_O_FILEMAP } = require('constants');
 
 exports.GetREADME = (req, res) => {
     request = req.body;
@@ -203,7 +202,6 @@ function GetCyclomaticResultFormatted(username, name) {
             "total": {},
             "average": {},
         };
-        console.log(result);
         check = 0;
         ntemp = 0;
         temp = [];
@@ -215,8 +213,6 @@ function GetCyclomaticResultFormatted(username, name) {
             .pipe(csv())
             .on('error', (err) => reject(err))
             .on('data', row => {
-                console.log(row);
-                console.log(countFile);
                 if (row['0'] != null) {
                     if (row["0"].includes('CC1')) {
                         ntemp = 0;
@@ -228,7 +224,6 @@ function GetCyclomaticResultFormatted(username, name) {
                         }
                     }
                     else if (row['0'].includes('RESULTS BY FUNCTION')) {
-                        console.log('aaaaaaaa');
                         check = 1;
                         temp = [];
                         ntemp = 0;
@@ -265,16 +260,24 @@ function GetCyclomaticResultFormatted(username, name) {
                             }
                         }
                     }
+<<<<<<< HEAD
                     else if (filename != 0 && risk != 0) {
                         row[filename] = row[filename].substr(13 + username.length + name.length, row[filename].length);
+=======
+                    else {
+                        if (row[filename] == null && row[filename - 1] != null) {
+                            row[filename - 1] = row[filename - 1].replace('"', '');
+                            row[filename] = row[filename - 1].substr(row[filename - 1].indexOf(',') + 1, row[filename - 1].length);
+                            row[filename - 1] = row[filename - 1].substr(0, row[filename - 1].indexOf(','));
+                        }
+                        row[filename] = row[filename].substr(10 + username.length + name.length, row[filename].length);
+>>>>>>> 092f33d471fa5c53c0b9cf3ccc912aab4a508ef4
                         a = '{';
                         for (i = 0; i < ntemp; i++) {
-                            a += `"${temp[i]}":"${row[i]}",`
+                            a += `"${temp[i]}":"${row[i].replace('"', '')}",`
                         }
                         a = a.substr(0, a.length - 1);
-                        // console.log(a);
                         a += '}';
-                        console.log(check);
                         if (!check) {
                             countFile += 1;
                             switch (row[risk]) {

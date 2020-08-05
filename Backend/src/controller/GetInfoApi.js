@@ -4,7 +4,6 @@ const util = require('util');
 const csv = require('csv-parser');
 const exec = util.promisify(require('child_process').exec);
 const getSize = require('get-folder-size');
-const { UV_FS_O_FILEMAP } = require('constants');
 
 exports.GetREADME = (req, res) => {
     request = req.body;

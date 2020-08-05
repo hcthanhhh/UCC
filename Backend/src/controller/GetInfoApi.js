@@ -265,8 +265,8 @@ function GetCyclomaticResultFormatted(username, name) {
                             }
                         }
                     }
-                    else {
-                        row[filename] = row[filename].substr(13 + username.length + name.length, row['5'].length);
+                    else if (filename != 0 && risk != 0) {
+                        row[filename] = row[filename].substr(13 + username.length + name.length, row[filename].length);
                         a = '{';
                         for (i = 0; i < ntemp; i++) {
                             a += `"${temp[i]}":"${row[i]}",`

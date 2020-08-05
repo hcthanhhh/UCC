@@ -279,6 +279,8 @@ function GetCyclomaticResultFormatted(username, name) {
                                 case 'Low': result["Result by File"]["Ratio"]["Low"] += 1; break;
                                 case 'Medium': result["Result by File"]["Ratio"]["Medium"] += 1; break;
                                 case 'High': result["Result by File"]["Ratio"]["High"] += 1; break;
+                                default: countFile -= 1;
+
                             }
                             result['Result by File']['listFile'].push(JSON.parse(a));
                         }
@@ -288,6 +290,7 @@ function GetCyclomaticResultFormatted(username, name) {
                                 case 'Low': result["Result by Function"]["Ratio"]["Low"] += 1; break;
                                 case 'Medium': result["Result by Function"]["Ratio"]["Medium"] += 1; break;
                                 case 'High': result["Result by Function"]["Ratio"]["High"] += 1; break;
+                                default: countFunction -= 1;
                             }
                             result['Result by Function']['listFunction'].push(JSON.parse(a));
                         }

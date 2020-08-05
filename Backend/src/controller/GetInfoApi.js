@@ -376,8 +376,8 @@ function GetRatioCyclomaticResult(username, name) {
                 "Medium": 0,
                 "High": 0
             },
-            "function": 0,
-            "file": 0,
+            "functions": 0,
+            "files": 0,
             "functions per file": 0
         };
         check = 0;
@@ -405,7 +405,7 @@ function GetRatioCyclomaticResult(username, name) {
                                 case 'Low': result["Ratio Result by File"]["Low"] += 1; break;
                                 case 'Medium': result["Ratio Result by File"]["Medium"] += 1; break;
                                 case 'High': result["Ratio Result by File"]["High"] += 1; break;
-                                default: result['file'] -= 1;
+                                default: result['files'] -= 1;
                             }
                         }
                         else {
@@ -414,7 +414,7 @@ function GetRatioCyclomaticResult(username, name) {
                                 case 'Low': result["Ratio Result by Function"]["Low"] += 1; break;
                                 case 'Medium': result["Ratio Result by Function"]["Medium"] += 1; break;
                                 case 'High': result["Ratio Result by Function"]["High"] += 1; break;
-                                default: result['function'] -= 1;
+                                default: result['functions'] -= 1;
                             }
                         }
                     }

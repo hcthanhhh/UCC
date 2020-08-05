@@ -260,10 +260,6 @@ function GetCyclomaticResultFormatted(username, name) {
                             }
                         }
                     }
-<<<<<<< HEAD
-                    else if (filename != 0 && risk != 0) {
-                        row[filename] = row[filename].substr(13 + username.length + name.length, row[filename].length);
-=======
                     else {
                         if (row[filename] == null && row[filename - 1] != null) {
                             row[filename - 1] = row[filename - 1].replace('"', '');
@@ -271,7 +267,6 @@ function GetCyclomaticResultFormatted(username, name) {
                             row[filename - 1] = row[filename - 1].substr(0, row[filename - 1].indexOf(','));
                         }
                         row[filename] = row[filename].substr(10 + username.length + name.length, row[filename].length);
->>>>>>> 092f33d471fa5c53c0b9cf3ccc912aab4a508ef4
                         a = '{';
                         for (i = 0; i < ntemp; i++) {
                             a += `"${temp[i]}":"${row[i].replace('"', '')}",`
@@ -377,7 +372,9 @@ function GetRatioCyclomaticResult(username, name) {
                 "Low": 0,
                 "Medium": 0,
                 "High": 0
-            }
+            },
+            "function": 0,
+            "file": 0
         };
         check = 0;
         risk = 0;
@@ -398,18 +395,22 @@ function GetRatioCyclomaticResult(username, name) {
                         ntemp = 0;
                     }
                     if (row[risk] != null) {
-                        if (!check)
+                        if (!check) {
+                            result['file'] += 1;
                             switch (row[risk]) {
                                 case 'Low': result["Ratio Result by File"]["Low"] += 1; break;
                                 case 'Medium': result["Ratio Result by File"]["Medium"] += 1; break;
                                 case 'High': result["Ratio Result by File"]["High"] += 1; break;
                             }
-                        else
+                        }
+                        else {
+                            result['function'] += 1;
                             switch (row[risk]) {
                                 case 'Low': result["Ratio Result by Function"]["Low"] += 1; break;
                                 case 'Medium': result["Ratio Result by Function"]["Medium"] += 1; break;
                                 case 'High': result["Ratio Result by Function"]["High"] += 1; break;
                             }
+                        }
                     }
                 }
             })

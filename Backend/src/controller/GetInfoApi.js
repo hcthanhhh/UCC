@@ -377,7 +377,8 @@ function GetRatioCyclomaticResult(username, name) {
                 "High": 0
             },
             "function": 0,
-            "file": 0
+            "file": 0,
+            "functions per file": 0
         };
         check = 0;
         risk = 0;
@@ -399,7 +400,7 @@ function GetRatioCyclomaticResult(username, name) {
                     }
                     if (row[risk] != null) {
                         if (!check) {
-                            result['file'] += 1;
+                            result['files'] += 1;
                             switch (row[risk]) {
                                 case 'Low': result["Ratio Result by File"]["Low"] += 1; break;
                                 case 'Medium': result["Ratio Result by File"]["Medium"] += 1; break;
@@ -408,7 +409,7 @@ function GetRatioCyclomaticResult(username, name) {
                             }
                         }
                         else {
-                            result['function'] += 1;
+                            result['functions'] += 1;
                             switch (row[risk]) {
                                 case 'Low': result["Ratio Result by Function"]["Low"] += 1; break;
                                 case 'Medium': result["Ratio Result by Function"]["Medium"] += 1; break;
@@ -420,6 +421,7 @@ function GetRatioCyclomaticResult(username, name) {
                 }
             })
             .on('end', () => {
+                result["functions per file"] = result["functions"] / result["files"];
                 resolve(result);
             })
     })

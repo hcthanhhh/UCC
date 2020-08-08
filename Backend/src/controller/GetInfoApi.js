@@ -102,7 +102,7 @@ exports.GetResultUCC = (req, res) => {
         })
 }
 
-exports.GetSLOCandSize = (req, res) => {
+exports.GetSLOCandType = (req, res) => {
     request = req.body;
     username = request.username;
     name = request.name;

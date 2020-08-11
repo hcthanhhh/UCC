@@ -30,7 +30,7 @@ router.post('/Compare', CompareLinux);
 router.post('/GetInfo', GetREADME);
 router.post('/GetlistFile', GetlistFile);
 router.post('/GetResultUCC', GetResultUCC);
-router.post('/GetSLOCandSize', GetSLOCandType);
+router.post('/GetSLOCandType', GetSLOCandType);
 router.post('/GetSLOC', GetSLOC);
 router.post('/GetUserSize', getUserSize);
 router.post('/GetProjectSize', getProjectSize);

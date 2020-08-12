@@ -1,17 +1,42 @@
 const fs = require('fs');
 const csv = require('csv-parser');
 
-function getsize(username, name) {
+function CheckFileAvailable(username, name, file) {
     return new Promise((resolve, reject) => {
+        fs.readdir(`../data/result/${username}/`, (err, files) => {
+            if (files.includes(name))
+                fs.readdir(`../data/result/${username}/${name}`, (err, filess) => {
+                    if (filess.includes(file)) {
+                        resolve(1);
+                        return;
+                    }
+                    else {
+                        reject(err);
+                        return;
+                    }
+                })
+            else reject(err);
+        })
+    })
+}
+
+
+function getsize(username, name) {
+    return new Promise(async (resolve, reject) => {
         result = 0;
-        fs.createReadStream(`../data/result/${username}/${name}/outfile_summary.csv`)
-            .pipe(csv())
-            .on('error', (err) => reject(err))
-            .on('data', row => {
-                if (row['0'] == 'Total');
-                result = parseInt(row['3']);
-            })
-            .on('end', () => resolve(result));
+        try {
+            _CheckFileAvailable = await CheckFileAvailable(username, name, 'outfile_summary.csv');
+            fs.createReadStream(`../data/result/${username}/${name}/outfile_summary.csv`)
+                .pipe(csv())
+                .on('error', (err) => reject(err))
+                .on('data', row => {
+                    if (row['0'] == 'Total');
+                    result = parseInt(row['3']);
+                })
+                .on('end', () => resolve(result));
+        } catch (err) {
+            reject(err)
+        }
     })
 }
 
@@ -31,8 +56,14 @@ exports.BasicCocomo = async (req, res) => {
     console.log('Basic Cocomo: ', username, name);
 
     let size = 0;
-    if (isUndefined(request.size)) size = await getsize(username, name);
-    else size = request.size;
+    try {
+        if (isUndefined(request.size)) size = await getsize(username, name);
+        else size = request.size;
+    } catch (error) {
+        res.status(403).send({ message: 'Error' });
+        return;
+    }
+
     size = size / 1000;
 
     let model = {
@@ -79,19 +110,24 @@ exports.IntermediateCocomo = async (req, res) => {
         '14': [1.23, 1.08, 1, 1.04, 1.1]
     }
 
-    driver = 1;
-    i = 0;
-    drivers.forEach(element => driver *= attributes[i][element]);
-
     let size = 0;
-    if (isUndefined(request.size)) size = await getsize(username, name);
-    else size = request.size;
+    try {
+        driver = 1;
+        i = 0;
+        drivers.forEach(element => driver *= attributes[i][element]);
+        if (isUndefined(request.size)) size = await getsize(username, name);
+        else size = request.size;
+    } catch (error) {
+        res.status(403).send({ message: 'Error' });
+        return;
+    }
+
     size = size / 1000;
 
     let model = {
-        '0': [2.4, 1.05, 2.5, 0.38],
+        '0': [3.2, 1.05, 2.5, 0.38],
         '1': [3.0, 1.12, 2.5, 0.35],
-        '2': [3.6, 1.20, 2.5, 0.32]
+        '2': [2.8, 1.20, 2.5, 0.32]
     };
 
     effort = model[mode][0] * Math.pow(size, model[mode][1]) * driver;

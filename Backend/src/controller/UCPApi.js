@@ -1,3 +1,10 @@
+function isUndefined(value) {
+    // Obtain `undefined` value that's
+    // guaranteed to not have been re-assigned
+    var undefined = void (0);
+    return value === undefined;
+}
+
 exports.CalculateUCP = (req, res) => {
     request = req.body;
     console.log(request);
@@ -37,13 +44,23 @@ exports.CalculateUCP = (req, res) => {
         //Use Case Point
         let UCP = (UUCW + UAW) * TCF * ECF;
 
+        //FP
+        let FP = 0;
+        if (isUndefined(request.FP)) FP = 0.083;
+        else {
+            nFP = request.FP.n;
+            for (let i = 0; i < nFP; i++) {
+                FP += request.FP.value[i];
+            }
+            FP = FP / (nFP * 8 * 30);
+        }
+
+        let Effort = FP * UCP;
 
         res.status(200).send({
-            'UUCW': UUCW,
-            'UAW': UAW,
-            'TCF': TCF,
-            'ECF': ECF,
-            'UCP': UCP
+            'UCP': UCP,
+            'Effort': Effort,
+            'FP': FP
         });
     } catch (error) {
         res.status(403).send({ message: error });

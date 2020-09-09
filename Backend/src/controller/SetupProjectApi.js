@@ -10,15 +10,17 @@ exports.CloneProject = (req, res) => {
     var name = request.name;
 
     console.log("CLone GIT: ", repo, username, name);
+    exec(`mkdir -p ../data/result/${username}/${name}`);
 
     download(`direct:${repo}`, `../data/${username}/${name}`, { clone: true }, async (e) => {
         if (e) {
+            exec(`rm -rf ../data/result/${username}/${name}`);
             res.status(404).send({ message: 'Error' })
             console.log('Error: ', e);
         }
         else {
             // await res.status(200).send({ message: 'Success' });
-            exec(`mkdir -p ../data/result/${username}/${name}`);
+
             await getProjectSize(req, res);
             console.log('Success');
         }

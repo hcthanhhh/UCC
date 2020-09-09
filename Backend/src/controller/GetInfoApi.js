@@ -8,6 +8,7 @@ const getSize = require('get-folder-size');
 function CheckFileAvailable(username, name, file) {
     return new Promise((resolve, reject) => {
         fs.readdir(`../data/result/${username}/`, (err, files) => {
+            console.log(files);
             if (files.includes(name))
                 fs.readdir(`../data/result/${username}/${name}`, (err, filess) => {
                     if (filess.includes(file)) {

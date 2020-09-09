@@ -18,8 +18,8 @@ exports.CloneProject = (req, res) => {
         }
         else {
             // await res.status(200).send({ message: 'Success' });
-            await getProjectSize(req, res);
             exec(`mkdir -p ../data/result/${username}/${name}`);
+            await getProjectSize(req, res);
             console.log('Success');
         }
     });

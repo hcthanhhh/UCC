@@ -9,6 +9,7 @@ const { CloneProject, UploadProject, DeleteProject, UpdateProject } = require('.
 const { UCCUrlMac, UCCUrlWindows, UCCUrlLinux, CompareMac, CompareLinux } = require('../controller/UCCApi');
 const { GetREADME, GetlistFile, GetResultUCC, GetSLOCandType, GetSLOC, getUserSize, getProjectSize, Cyclomatic, RatioCyclomatic, CyclomaticFormatted } = require('../controller/GetInfoApi');
 const { CalculateUCP } = require('../controller/UCPApi');
+const { CalculateFP } = require('../controller/FPApi')
 const { BasicCocomo, IntermediateCocomo, DetailedCocomo } = require('../controller/CocomoApi');
 
 const upload = multer({ dest: '../data' });
@@ -40,6 +41,9 @@ router.post('/GetCyclomaticFormatted', Cyclomatic);
 
 // UCP API
 router.post('/CalculateUCP', CalculateUCP);
+
+// FP API
+router.post('/CalculateFP', CalculateFP);
 
 // Cocomo API
 router.post('/BasicCocomo', BasicCocomo);

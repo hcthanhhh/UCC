@@ -44,23 +44,27 @@ exports.CalculateUCP = (req, res) => {
         //Use Case Point
         let UCP = (UUCW + UAW) * TCF * ECF;
 
-        //FP
-        let FP = 0;
-        if (isUndefined(request.FP)) FP = 0.083;
+        //PF
+        let PF = 0;
+        if (isUndefined(request.FP)) PF = 0.083;
         else {
-            nFP = request.FP.n;
-            for (let i = 0; i < nFP; i++) {
-                FP += request.FP.value[i];
+            nPF = request.PF.n;
+            for (let i = 0; i < nPF; i++) {
+                PF += request.PF.value[i];
             }
-            FP = FP / (nFP * 8 * 30);
+            PF = PF / (nPF * 8 * 30);
         }
 
-        let Effort = FP * UCP;
+        let Effort = PF * UCP;
+        let EstimateTime = 3.0 * Effort ** 1 / 3;
+        let Staff = Effort / EstimateTime > 1 ? Math.round(Effort / EstimateTime) : 1;
 
         res.status(200).send({
             'UCP': UCP,
             'Effort': Effort,
-            'FP': FP
+            'PF': PF,
+            'Time': Math.round(EstimateTime),
+            'Staff': Staff
         });
     } catch (error) {
         res.status(403).send({ message: error });

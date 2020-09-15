@@ -33,25 +33,30 @@ exports.CloneProject = async (req, res) => {
         .then((res) => {
             size = res.data.size;
             private = res.data.private;
-        });
+        })
+        .catch((err) => {
+            private = true;
+        })
 
     console.log(size);
-    if (size > 100000) {
-        res.status(404).send({ size: size * 1000 })
-        return;
-    }
     if (private) {
         res.status(404).send({ message: 'Private' })
         return;
     }
-
+    if (size > 100000) {
+        res.status(404).send({ size: size * 1000 })
+        return;
+    }
     exec(`mkdir -p ../data/result/${username}/${name}`);
+    exec(`mkdir -p ../data/compressed/${username}`);
+
     download(`direct:${repo}`, `../data/${username}/${name}`, { clone: true }, async (e) => {
         if (e) {
             let err = e.toString();
             console.log(err);
             if (err.includes("Error: 'git checkout' failed with status 1")) {
                 await res.status(200).send({ size: size * 1000 });
+                await exec(`zip -r ../data/compressed/${username}/${name}.zip ../data/${username}/${name}/`);
                 console.log('Success');
             }
             else if (err.includes("Error: 'git clone' failed with status 128")) {
@@ -67,6 +72,7 @@ exports.CloneProject = async (req, res) => {
         else {
             await res.status(200).send({ size: size * 1000 });
             // await getProjectSize(req, res);
+            await exec(`zip -r ../data/compressed/${username}/${name}.zip ../data/${username}/${name}/`);
             console.log('Success');
         }
     });
@@ -74,7 +80,7 @@ exports.CloneProject = async (req, res) => {
 
 exports.UploadProject = async (req, res) => {
     request = req.body;
-    file = req.file;
+    let file = req.file;
     let username = request.username;
     let name = request.name;
 
@@ -82,10 +88,10 @@ exports.UploadProject = async (req, res) => {
 
     try {
         await exec(`mkdir -p '../data/${username}/${name}'`);
-        await exec(`mv '../data/${file.filename}' '../data/${file.originalname}'`);
-        await exec(`unzip '../data/${file.originalname}' -d '../data/${username}/${name}'`);
-        await exec(`rm '../data/${file.originalname}'`);
+        await exec(`unzip '../data/${file.filename}' -d '../data/${username}/${name}'`);
         await exec(`mkdir -p '../data/result/${username}/${name}'`);
+        await exec(`mkdir -p ../data/compressed/${username}`);
+        await exec(`mv '../data/${file.filename}' '../data/compressed/${username}/${name}.zip'`);
         // res.status(200).send({ message: 'Success' });
         getProjectSize(req, res);
     } catch (error) {

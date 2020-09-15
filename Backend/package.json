@@ -18,6 +18,7 @@
     "download-git-repo": "^3.0.2",
     "export": "^0.1.337",
     "express": "^4.17.1",
+    "form-data": "^3.0.0",
     "fs": "0.0.1-security",
     "get-folder-size": "^2.0.1",
     "multer": "^1.4.2",

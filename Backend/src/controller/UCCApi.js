@@ -4,6 +4,8 @@ const shell = require('node-powershell');
 const util = require('util');
 const exec = util.promisify(require('child_process').exec);
 const { GetSLOC } = require('./GetInfoApi');
+const axios = require('axios');
+const FormData = require('form-data');
 
 exports.UCCUrlWindows = async (req, res) => {
     request = req.body;
@@ -46,6 +48,33 @@ exports.UCCUrlMac = async (req, res) => {
         // res.status(200).send({ message: "Success" });
         GetSLOC(req, res);
     } catch (error) {
+        // const form = new FormData();
+        // form.append('filename', `${name}.zip`);
+        // form.append('my_file', fs.createReadStream(`../data/compressed/${username}/${name}.zip`));
+        // form.append('Content-Disposition', 'form-data');
+
+        // await axios.post('https://api.codetabs.com/v1/loc',
+        //     form,
+        //     {
+        //         headers: {
+        //             "Content-Type": 'Multipart/form-data',
+        //             'Content-Disposition': 'form-data'
+        //         }
+        //     })
+        //     // await axios({
+        //     //     method: 'post',
+        //     //     url: 'https://api.codetabs.com/v1/loc',
+        //     //     header: {
+        //     //         'Content-Disposition': 'form-data'
+        //     //     },
+        //     //     data: form
+        //     // })
+        //     .then(res => {
+        //         console.log(res);
+        //     })
+        //     .catch(err => {
+        //         console.log(err);
+        //     })
         console.error(error);
         res.status(404).send({ message: "Error" });
     };

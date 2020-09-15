@@ -19,7 +19,7 @@ UCC requires [Node.js](https://nodejs.org/) v4+ to run.
 Install the dependencies and devDependencies and start the server.
 
 ```sh
-$ cd UCC
+$ cd UCC/Backend
 $ npm install -d
 $ npm run serve
 ```
@@ -40,8 +40,19 @@ UCC is currently extended with the following functions.
 | CloneGit | ```api/CloneGit``` |
 | UploadProject | ```api/UploadProject``` |
 | DeleteGit | ```api/DeleteGit``` |
-| UCCaUrl | ```api/UCCaUrl``` |
-| UCC2Url | ```api/UCC2Url``` |
+| UCC API | ``` api/UCCUrlMac ``` |
+| Get Info API | ```api/GetInfo ``` |
+|| ```api/GetlistFile``` |
+|| ```api/GetResultUCC``` |
+|| ```api/GetSLOCandSize``` |
+|| ```api/GetSLOC``` |
+|| ```api/getUserSize``` |
+|| ```api/getProjectSize``` |
+|| ```api/GetCyclomatic``` |
+| UCP API| ```api/CalculateUCP``` |
+| COCOMO API"| ```api/BasicCocomo``` |
+|| ```api/IntermediateCocomo``` |
+|| ```api/DetailedCocomo``` |
 
 ### Todos
 

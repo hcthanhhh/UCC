@@ -50,7 +50,7 @@ UCC is currently extended with the following functions.
 || ```api/getProjectSize``` |
 || ```api/GetCyclomatic``` |
 | UCP API| ```api/CalculateUCP``` |
-| COCOMO API"| ```api/BasicCocomo``` |
+| COCOMO API| ```api/BasicCocomo``` |
 || ```api/IntermediateCocomo``` |
 || ```api/DetailedCocomo``` |
 

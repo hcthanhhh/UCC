@@ -4,6 +4,14 @@ const exec = util.promisify(require('child_process').exec);
 const { getProjectSize } = require('./GetInfoApi');
 const axios = require('axios');
 
+function GetUser_Repo(repo) {
+    if (repo.includes("https://github.com/")) return repo.substring(19, repo.length);
+    if (repo.includes("https://www.github.com/")) return repo.substring(23, repo.length);
+    if (repo.includes("github.com/")) return repo.substring(11, repo.length);
+    if (repo.includes("www.github.com/")) return repo.substring(14, repo.length);
+    return 'gg';
+}
+
 exports.CloneProject = async (req, res) => {
     request = req.body;
     let repo = request.url;
@@ -12,17 +20,17 @@ exports.CloneProject = async (req, res) => {
 
     console.log("CLone GIT: ", repo, username, name);
 
-    let user_repo = repo;
-    if (repo.includes("https://")) user_repo = repo.substring(19, repo.length);
-    else user_repo = repo.substring(11, repo.length);
-
+    let user_repo = await GetUser_Repo(repo);
     console.log(user_repo);
+    if (user_repo == "gg") {
+        res.status(404).send({ message: "Incorrect User/Repo" })
+        return;
+    }
 
     let size = 0;
     let private = false;
     await axios.get(`https://api.github.com/repos/${user_repo}`)
         .then((res) => {
-            console.log(res);
             size = res.data.size;
             private = res.data.private;
         });
@@ -40,9 +48,21 @@ exports.CloneProject = async (req, res) => {
     exec(`mkdir -p ../data/result/${username}/${name}`);
     download(`direct:${repo}`, `../data/${username}/${name}`, { clone: true }, async (e) => {
         if (e) {
-            exec(`rm -rf ../data/result/${username}/${name}`);
-            res.status(404).send({ message: 'Error' })
-            console.log('Error: ', e);
+            let err = e.toString();
+            console.log(err);
+            if (err.includes("Error: 'git checkout' failed with status 1")) {
+                await res.status(200).send({ size: size * 1000 });
+                console.log('Success');
+            }
+            else if (err.includes("Error: 'git clone' failed with status 128")) {
+                await res.status(404).send({ message: "This project is already cloned. You need to delete this or create a new project." });
+                console.log(e);
+            }
+            else {
+                exec(`rm -rf ../data/result/${username}/${name}`);
+                res.status(404).send({ message: 'Error' })
+                console.log(e);
+            }
         }
         else {
             await res.status(200).send({ size: size * 1000 });

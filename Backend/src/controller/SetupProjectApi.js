@@ -23,7 +23,8 @@ exports.CloneProject = async (req, res) => {
     let user_repo = await GetUser_Repo(repo);
     console.log(user_repo);
     if (user_repo == "gg") {
-        res.status(404).send({ message: "Incorrect User/Repo" })
+        // res.status(200).send({ size: -1 })
+        res.status(200).send({size: -1})
         return;
     }
 
@@ -40,11 +41,11 @@ exports.CloneProject = async (req, res) => {
 
     console.log(size);
     if (private) {
-        res.status(404).send({ message: 'Private' })
+        res.status(200).send({ size: -2 })
         return;
     }
-    if (size > 100000) {
-        res.status(404).send({ size: size * 1000 })
+    if (size > 104857) {
+        res.status(200).send({ size: size * 1000 })
         return;
     }
     exec(`mkdir -p ../data/result/${username}/${name}`);
@@ -55,7 +56,7 @@ exports.CloneProject = async (req, res) => {
             let err = e.toString();
             console.log(err);
             if (err.includes("Error: 'git checkout' failed with status 1")) {
-                await res.status(200).send({ size: size * 1000 });
+                await res.status(200).send({ size: size * 1024 });
                 await exec(`zip -r ../data/compressed/${username}/${name}.zip ../data/${username}/${name}/`);
                 console.log('Success');
             }

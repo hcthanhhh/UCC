@@ -27,7 +27,7 @@ exports.UCCUrlWindows = async (req, res) => {
         GetSLOC(req, res);
     } catch (error) {
         console.log("Error: ", error);
-        res.status(403).send({ message: "Error" });
+        res.status(200).send({ SLOC: "Error" });
     }
 };
 
@@ -75,8 +75,7 @@ exports.UCCUrlMac = async (req, res) => {
         //     .catch(err => {
         //         console.log(err);
         //     })
-        console.error(error);
-        res.status(404).send({ message: "Error" });
+        res.status(200).send({ SLOC: "-1" });
     };
 };
 

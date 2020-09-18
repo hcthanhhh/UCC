@@ -190,7 +190,7 @@ exports.GetSLOC = async (req, res) => {
             })
             .on('end', () => res.status(200).send(result));
     } catch (err) {
-        res.status(403).send({ message: "Error" })
+        res.status(200).send({ SLOC: -1 })
     }
 
 
@@ -210,6 +210,8 @@ exports.getProjectSize = async (req, res) => {
     let request = req.body;
     let username = request.username;
     let name = request.name;
+
+    console.log('get Project Size:', username, name)
 
     getSize(`../data/${username}/${name}`, (err, size) => {
         if (err) res.status(403).send({ 'message': err });

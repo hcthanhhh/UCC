@@ -17,7 +17,7 @@
     "csv-parser": "^2.3.2",
     "download-git-repo": "^3.0.2",
     "export": "^0.1.337",
-    "express": "^4.17.1",
+    "express": "^4.17.3",
     "form-data": "^3.0.0",
     "fs": "0.0.1-security",
     "get-folder-size": "^2.0.1",
